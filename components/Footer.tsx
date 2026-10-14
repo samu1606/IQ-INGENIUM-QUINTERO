@@ -1,102 +1,99 @@
-import { Mail } from "lucide-react";
-import type { Dictionary } from "@/content";
-import { site, whatsappLink } from "@/lib/site";
-import { Logo } from "./Logo";
-import { WhatsAppIcon, InstagramIcon, LinkedInIcon, FacebookIcon } from "./icons";
+"use client";
 
-const socialIcons = {
-  instagram: InstagramIcon,
-  linkedin: LinkedInIcon,
-  facebook: FacebookIcon,
-};
+import React from "react";
+import { content } from "@/content";
 
-export function Footer({ t }: { t: Dictionary }) {
-  const f = t.footer;
-  const year = new Date().getFullYear();
+export const Footer: React.FC = () => {
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith("#")) {
+      e.preventDefault();
+      const targetId = href.replace("#", "");
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+  };
+
   return (
-    <footer className="border-t border-line bg-ink-950 pb-28 pt-16 md:pb-12">
-      <div className="container-iq">
-        <div className="grid gap-12 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
-          <div>
-            <Logo name={t.brand.name} alt={t.brand.logoAlt} size={40} />
-            <p className="mt-5 max-w-sm text-sm leading-relaxed text-fg-muted">{f.tagline}</p>
+    <footer className="w-full bg-white border-t border-[#b9cbbc]/30 py-16 sm:py-20">
+      <div className="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-16">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 sm:gap-12 mb-14">
+          {/* Brand & Purpose */}
+          <div className="md:col-span-5 flex flex-col items-start gap-4">
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-8 rounded-xl bg-[#006d3f] flex items-center justify-center text-white shadow-xs font-display font-bold text-sm tracking-tighter">
+                <span className="text-[#26ff9d]">I</span>Q
+              </div>
+              <span className="font-display font-semibold text-lg text-[#191c1f]">
+                {content.footer.brand}
+              </span>
+            </div>
+
+            <p className="font-body text-sm text-[#3b4a3f] max-w-sm leading-relaxed">
+              {content.footer.brandDescription}
+            </p>
+
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#f2f3f8] text-[#191c1f] font-display text-xs font-medium border border-[#b9cbbc]/20 mt-1">
+              <span className="w-2 h-2 rounded-full bg-[#26ff9d] animate-pulse shadow-[0_0_8px_#26ff9d]" />
+              <span>{content.footer.statusBadge}</span>
+            </div>
           </div>
 
-          <nav aria-label={f.linksTitle}>
-            <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-fg-subtle">{f.linksTitle}</h2>
-            <ul className="mt-4 space-y-3 text-sm">
-              {t.nav.links.map((l) => (
-                <li key={l.href}>
-                  <a href={l.href} className="text-fg-muted transition-colors hover:text-fg">
-                    {l.label}
-                  </a>
-                </li>
+          {/* Contacto Directo */}
+          <div className="md:col-span-4 flex flex-col gap-3">
+            <span className="font-label text-xs uppercase tracking-wider text-[#535d55] font-semibold">
+              {content.footer.contactHeading}
+            </span>
+            <a
+              href={`mailto:${content.footer.email}`}
+              className="font-display text-lg sm:text-xl font-bold text-[#191c1f] hover:text-[#006d3f] transition-colors"
+            >
+              {content.footer.email}
+            </a>
+            <span className="font-body text-sm text-[#3b4a3f]">
+              {content.footer.locations}
+            </span>
+          </div>
+
+          {/* Navegación */}
+          <div className="md:col-span-3 flex flex-col gap-3">
+            <span className="font-label text-xs uppercase tracking-wider text-[#535d55] font-semibold">
+              {content.footer.navHeading}
+            </span>
+            <div className="flex flex-col gap-2 font-body text-sm">
+              {content.footer.navLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  onClick={(e) => handleNavClick(e, link.href)}
+                  className="text-[#3b4a3f] hover:text-[#191c1f] transition-colors"
+                >
+                  {link.label}
+                </a>
               ))}
-            </ul>
-          </nav>
-
-          <div>
-            <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-fg-subtle">{f.contactTitle}</h2>
-            <ul className="mt-4 space-y-3 text-sm">
-              <li>
-                <a
-                  href={whatsappLink(t.whatsapp.defaultMessage)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-fg-muted transition-colors hover:text-mint-400"
-                >
-                  <WhatsAppIcon className="h-4 w-4" />
-                  <span>
-                    <span className="sr-only">{f.whatsappLabel}: </span>
-                    {site.whatsappDisplay}
-                  </span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href={`mailto:${f.email}`}
-                  className="inline-flex items-center gap-2 text-fg-muted transition-colors hover:text-mint-400"
-                >
-                  <Mail className="h-4 w-4" aria-hidden />
-                  <span>
-                    <span className="sr-only">{f.emailLabel}: </span>
-                    {f.email}
-                  </span>
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-fg-subtle">{f.socialTitle}</h2>
-            <ul className="mt-4 flex gap-3">
-              {f.social.map((s) => {
-                const Icon = socialIcons[s.icon];
-                return (
-                  <li key={s.name}>
-                    <a
-                      href={s.href}
-                      aria-label={s.name}
-                      target={s.href.startsWith("http") ? "_blank" : undefined}
-                      rel={s.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                      className="flex h-11 w-11 items-center justify-center rounded-full border border-line-strong text-fg-muted transition-colors hover:border-mint-400/50 hover:text-mint-400"
-                    >
-                      <Icon className="h-[1.1rem] w-[1.1rem]" />
-                    </a>
-                  </li>
-                );
-              })}
-            </ul>
+            </div>
           </div>
         </div>
 
-        <div className="mt-14 flex flex-col gap-3 border-t border-line pt-6 text-xs text-fg-subtle sm:flex-row sm:items-center sm:justify-between">
-          <p>
-            © {year} {t.brand.name}. {f.rights}
-          </p>
-          <p className="font-display tracking-[0.2em]">{t.brand.short}</p>
+        {/* Bottom Bar */}
+        <div className="pt-8 border-t border-[#edeef3] flex flex-col sm:flex-row items-center justify-between gap-4 font-label text-xs text-[#535d55]">
+          <p>{content.footer.copyright}</p>
+          <div className="flex items-center gap-6">
+            {content.footer.legalLinks.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                className="hover:text-[#191c1f] transition-colors"
+              >
+                {item.label}
+              </a>
+            ))}
+          </div>
         </div>
       </div>
     </footer>
   );
-}
+};

@@ -1,97 +1,91 @@
 @import "tailwindcss";
 
 /* ------------------------------------------------------------------
-   Tema Ingenium Quintero — Tailwind v4 con colores ricos y animaciones.
+   Tema Ingenium Quintero — claro, editorial, acento menta.
+   Los tokens vienen del DESIGN.md que generó Stitch.
+
+   OJO CON LAS FUENTES: no se declaran por nombre ('Inter'), sino por
+   las variables que inyecta next/font en el <html>. Declararlas por
+   nombre NO resuelve con next/font y la página cae a la fuente del
+   sistema sin avisar. Ver app/layout.tsx.
 ------------------------------------------------------------------- */
 @theme {
-  /* Fondos y superficies con matices oscuros y ricos */
-  --color-ink-950: #05070a;
-  --color-ink-900: #0a0d14;
-  --color-ink-850: #0f1420;
-  --color-ink-800: #151b2a;
-  --color-ink-700: #1e2638;
-  --color-ink-600: #2b364e;
+  /* Tipografía — respaldada por next/font */
+  --font-display: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-label: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* Acento */
+  --color-primary: #006d3f;
+  --color-primary-container: #26ff9d;
+  --color-on-primary: #ffffff;
 
   /* Texto */
-  --color-fg: #f3f6fa;
-  --color-fg-muted: #9da8b9;
-  --color-fg-subtle: #6e7a8e;
+  --color-on-surface: #191c1f;
+  --color-on-surface-variant: #3b4a3f;
 
-  /* Acentos vibrantes */
-  --color-mint-300: #7dffc3;
-  --color-mint-400: #26ff9d;
-  --color-mint-500: #00e580;
-  --color-mint-600: #00b362;
+  /* Superficies */
+  --color-surface: #f8f9fe;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f2f3f8;
+  --color-surface-container: #edeef3;
+  --color-surface-container-high: #e7e8ed;
+  --color-surface-container-highest: #e1e2e7;
+  --color-outline: #6b7b6e;
+  --color-outline-variant: #b9cbbc;
 
-  --color-cyan-400: #00f0ff;
-  --color-cyan-500: #00d4e3;
+  /* Secundario */
+  --color-secondary: #006971;
+  --color-secondary-fixed: #83f3ff;
+  --color-on-secondary-fixed: #002023;
 
-  --color-amber-400: #ffb833;
-  --color-amber-500: #f59e0b;
-
-  --color-line: rgb(255 255 255 / 0.08);
-  --color-line-strong: rgb(255 255 255 / 0.16);
-
-  /* Tipografía */
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-grotesk), var(--font-inter), ui-sans-serif, sans-serif;
-
-  --radius-xl2: 1.25rem;
-
-  --shadow-glow: 0 0 35px -5px rgb(38 255 157 / 0.4);
-  --shadow-cyan-glow: 0 0 35px -5px rgb(0 240 255 / 0.35);
-  --shadow-amber-glow: 0 0 35px -5px rgb(255 184 51 / 0.35);
-
-  --animate-pulse-ring: pulse-ring 2.4s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
-  --animate-float: float 6s ease-in-out infinite;
-  --animate-float-slow: float 9s ease-in-out infinite;
-  --animate-glow-pulse: glow-pulse 4s ease-in-out infinite;
-
-  @keyframes pulse-ring {
-    0% { transform: scale(1); opacity: 0.6; }
-    80%, 100% { transform: scale(1.75); opacity: 0; }
-  }
-
-  @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-  }
-
-  @keyframes glow-pulse {
-    0%, 100% { opacity: 0.4; transform: scale(1); }
-    50% { opacity: 0.8; transform: scale(1.08); }
-  }
+  /* Sombras del DESIGN.md: difusas y frías, nunca negras y duras */
+  --shadow-card: 0 12px 32px -4px rgb(16 24 40 / 0.06), 0 4px 12px -2px rgb(16 24 40 / 0.02);
+  --shadow-float: 0 24px 48px -12px rgb(16 24 40 / 0.10), 0 8px 16px -4px rgb(16 24 40 / 0.04);
 }
 
 @layer base {
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: 5rem;
+    /* Deja aire arriba al saltar a un ancla, para que no la tape el header */
+    scroll-padding-top: 5.5rem;
     -webkit-text-size-adjust: 100%;
+    font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+    color: #191c1f;
+    background-color: #f8f9fe;
   }
 
   body {
-    background-color: var(--color-ink-950);
-    color: var(--color-fg);
-    font-family: var(--font-sans);
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  button, input, textarea, select {
+    font-family: inherit;
   }
 
   ::selection {
-    background: var(--color-mint-400);
-    color: var(--color-ink-950);
+    background: var(--color-primary-container);
+    color: #05070a;
   }
 
-  /* Foco visible y consistente */
+  /* Foco visible y consistente en todo el sitio */
   :focus-visible {
-    outline: 2px solid var(--color-mint-400);
+    outline: 2px solid #006d3f;
     outline-offset: 3px;
     border-radius: 6px;
   }
 
+  /* Respeta a quien pidió menos movimiento */
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     *, *::before, *::after {
@@ -102,140 +96,76 @@
   }
 }
 
-@layer components {
-  .container-iq {
-    width: 100%;
-    max-width: 78rem;
-    margin-inline: auto;
-    padding-inline: 1.25rem;
-  }
-  @media (min-width: 640px) {
-    .container-iq { padding-inline: 2rem; }
-  }
+/* Ayudantes de tipografía del diseño */
+.font-display-hero {
+  font-family: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
 
-  .section {
-    padding-block: 5.5rem;
-  }
-  @media (min-width: 768px) {
-    .section { padding-block: 8rem; }
-  }
+.font-headline-xl {
+  font-family: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
 
-  .eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    font-family: var(--font-display);
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-mint-400);
-  }
-  .eyebrow::before {
-    content: "";
-    width: 1.5rem;
-    height: 2px;
-    background: linear-gradient(90deg, var(--color-mint-400), transparent);
-    border-radius: 99px;
-  }
+.font-headline-lg {
+  font-family: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
 
-  .heading-xl {
-    font-family: var(--font-display);
-    font-weight: 700;
-    letter-spacing: -0.035em;
-    line-height: 1.05;
-    font-size: clamp(2.5rem, 6.5vw, 4.75rem);
-  }
+.font-headline-md {
+  font-family: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
 
-  .heading-lg {
-    font-family: var(--font-display);
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
-    font-size: clamp(2rem, 4.5vw, 3.25rem);
-  }
+.font-headline-sm {
+  font-family: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
 
-  .text-gradient {
-    background: linear-gradient(135deg, #ffffff 20%, #dbe4f0 60%, var(--color-mint-400) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
+.font-body-xl,
+.font-body-lg,
+.font-body-md {
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 400;
+}
 
-  .text-gradient-mint {
-    background: linear-gradient(135deg, var(--color-mint-300) 0%, var(--color-mint-400) 50%, var(--color-cyan-400) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
+.font-label-lg,
+.font-label-sm {
+  font-family: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+}
 
-  .card {
-    background: linear-gradient(180deg, rgb(255 255 255 / 0.05), rgb(255 255 255 / 0.015));
-    border: 1px solid var(--color-line);
-    border-radius: var(--radius-xl2);
-    backdrop-filter: blur(12px);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .card:hover {
-    border-color: rgb(38 255 157 / 0.3);
-    box-shadow: 0 12px 35px -10px rgb(0 0 0 / 0.5), 0 0 25px -5px rgb(38 255 157 / 0.15);
-  }
+.font-label-sm {
+  letter-spacing: 0.04em;
+}
 
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.65rem;
-    min-height: 3.25rem;
-    padding: 0.85rem 1.6rem;
-    border-radius: 999px;
-    font-weight: 600;
-    font-size: 0.975rem;
-    line-height: 1;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    -webkit-tap-highlight-color: transparent;
-    cursor: pointer;
-  }
-  .btn:active { transform: scale(0.97); }
+.font-code-mono {
+  font-family: var(--font-grotesk), monospace;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
 
-  .btn-primary {
-    background: linear-gradient(135deg, var(--color-mint-300), var(--color-mint-400));
-    color: var(--color-ink-950);
-    box-shadow: 0 4px 20px -2px rgb(38 255 157 / 0.35);
-  }
-  .btn-primary:hover {
-    background: linear-gradient(135deg, #ffffff, var(--color-mint-300));
-    box-shadow: 0 6px 30px 0px rgb(38 255 157 / 0.55);
-    transform: translateY(-2px);
-  }
+/* Márgenes del diseño */
+.px-margin-desktop {
+  padding-left: 5rem;
+  padding-right: 5rem;
+}
 
-  .btn-ghost {
-    border: 1px solid var(--color-line-strong);
-    color: var(--color-fg);
-    background: rgb(255 255 255 / 0.03);
+@media (max-width: 1024px) {
+  .px-margin-desktop {
+    padding-left: 2rem;
+    padding-right: 2rem;
   }
-  .btn-ghost:hover {
-    border-color: rgb(38 255 157 / 0.45);
-    background: rgb(38 255 157 / 0.08);
-    transform: translateY(-2px);
-    color: #ffffff;
-  }
+}
 
-  .bg-grid {
-    background-image:
-      linear-gradient(to right, rgb(255 255 255 / 0.05) 1px, transparent 1px),
-      linear-gradient(to bottom, rgb(255 255 255 / 0.05) 1px, transparent 1px);
-    background-size: 48px 48px;
-    mask-image: radial-gradient(ellipse 85% 65% at 50% 0%, #000 45%, transparent 100%);
-  }
-
-  .noise {
-    position: relative;
-  }
-  .noise::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.03;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+@media (max-width: 640px) {
+  .px-margin-desktop {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
   }
 }

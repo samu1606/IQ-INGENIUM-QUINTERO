@@ -1,109 +1,141 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
-import { Send, Sparkles, CheckCircle2 } from "lucide-react";
-import type { Dictionary } from "@/content";
+import React, { useState } from "react";
+import { content } from "@/content";
 import { whatsappLink } from "@/lib/site";
+import { Send, CheckCircle2, Shield, AlertCircle } from "lucide-react";
 
-/** Captura de leads: arma el mensaje con nombre + número y abre WhatsApp. */
-export function LeadForm({ t }: { t: Dictionary["finalCta"]["form"] }) {
+interface LeadFormProps {
+  onSuccess?: () => void;
+}
+
+export const LeadForm: React.FC<LeadFormProps> = ({ onSuccess }) => {
   const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [errors, setErrors] = useState<{ name?: string; phone?: string }>({});
+  const [business, setBusiness] = useState("");
+  const [details, setDetails] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const cleanName = name.trim();
-    const digits = phone.replace(/[^\d]/g, "");
-    const next: typeof errors = {};
-    if (cleanName.length < 2) next.name = t.errorName;
-    if (digits.length < 8 || digits.length > 15) next.phone = t.errorPhone;
-    setErrors(next);
-    if (Object.keys(next).length) return;
+    if (!name.trim() || !business.trim() || !details.trim()) {
+      setError(content.leadForm.errorValidation);
+      return;
+    }
 
-    const message = t.messageTemplate
-      .replace("{name}", cleanName)
-      .replace("{phone}", phone.trim());
-    window.open(whatsappLink(message), "_blank", "noopener,noreferrer");
-  }
+    setError(null);
+    setIsSubmitting(true);
 
-  const inputBase =
-    "mt-2 block w-full rounded-xl border bg-ink-950/80 px-4 py-3.5 text-base text-fg placeholder:text-fg-subtle transition-all duration-200 focus:border-mint-400 focus:outline-none focus:ring-2 focus:ring-mint-400/20";
+    const message = `Hola Ingenium Quintero, me gustaría solicitar un diagnóstico gratuito:
+
+• Nombre: ${name.trim()}
+• Negocio / Sector: ${business.trim()}
+• Qué quiero automatizar: ${details.trim()}`;
+
+    const link = whatsappLink(message);
+
+    setTimeout(() => {
+      setIsSubmitting(false);
+      window.open(link, "_blank", "noopener,noreferrer");
+      if (onSuccess) {
+        onSuccess();
+      }
+    }, 400);
+  };
 
   return (
-    <form
-      onSubmit={onSubmit}
-      noValidate
-      className="card relative overflow-hidden rounded-[2rem] border border-white/15 bg-ink-900/90 p-7 sm:p-9 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-xl"
-      aria-labelledby="form-leads-titulo"
-    >
-      <div className="flex items-center gap-2 text-mint-400 font-semibold text-xs uppercase tracking-wider">
-        <Sparkles className="h-4 w-4" />
-        <span>Atención rápida</span>
+    <div className="w-full max-w-xl mx-auto bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-[#b9cbbc]/25 text-left">
+      <div className="mb-6">
+        <h3 className="font-display text-xl sm:text-2xl font-bold text-[#191c1f] mb-2 tracking-tight">
+          {content.leadForm.heading}
+        </h3>
+        <p className="font-body text-xs sm:text-sm text-[#3b4a3f] leading-relaxed">
+          {content.leadForm.subheading}
+        </p>
       </div>
 
-      <h3 id="form-leads-titulo" className="mt-2 font-display text-2xl font-bold text-fg">
-        {t.title}
-      </h3>
+      {error && (
+        <div
+          role="alert"
+          className="mb-5 p-3.5 rounded-2xl bg-[#ffdad6]/50 border border-[#ba1a1a]/20 flex items-center gap-2.5 text-xs text-[#93000a] font-body font-medium"
+        >
+          <AlertCircle size={16} strokeWidth={1.5} className="shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
 
-      <div className="mt-6">
-        <label htmlFor="lead-name" className="text-sm font-semibold text-fg-muted">
-          {t.nameLabel}
-        </label>
-        <input
-          id="lead-name"
-          name="name"
-          type="text"
-          autoComplete="name"
-          required
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder={t.namePlaceholder}
-          aria-invalid={!!errors.name}
-          aria-describedby={errors.name ? "lead-name-error" : undefined}
-          className={`${inputBase} ${errors.name ? "border-amber-400" : "border-white/10"}`}
-        />
-        {errors.name && (
-          <p id="lead-name-error" role="alert" className="mt-2 text-sm font-medium text-amber-400">
-            {errors.name}
-          </p>
-        )}
-      </div>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        {/* Nombre */}
+        <div>
+          <label
+            htmlFor="lead-name"
+            className="block font-label text-xs uppercase tracking-wider text-[#191c1f] font-semibold mb-1.5"
+          >
+            {content.leadForm.nameLabel} <span className="text-[#006d3f]">*</span>
+          </label>
+          <input
+            id="lead-name"
+            type="text"
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder={content.leadForm.namePlaceholder}
+            className="w-full px-4 py-3 rounded-xl bg-[#f8f9fe] border border-[#b9cbbc]/30 text-sm text-[#191c1f] placeholder:text-[#535d55]/60 focus:outline-none focus:ring-2 focus:ring-[#006d3f] focus:border-transparent transition-all"
+          />
+        </div>
 
-      <div className="mt-5">
-        <label htmlFor="lead-phone" className="text-sm font-semibold text-fg-muted">
-          {t.phoneLabel}
-        </label>
-        <input
-          id="lead-phone"
-          name="phone"
-          type="tel"
-          inputMode="tel"
-          autoComplete="tel"
-          required
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          placeholder={t.phonePlaceholder}
-          aria-invalid={!!errors.phone}
-          aria-describedby={errors.phone ? "lead-phone-error" : "lead-note"}
-          className={`${inputBase} ${errors.phone ? "border-amber-400" : "border-white/10"}`}
-        />
-        {errors.phone && (
-          <p id="lead-phone-error" role="alert" className="mt-2 text-sm font-medium text-amber-400">
-            {errors.phone}
-          </p>
-        )}
-      </div>
+        {/* Negocio */}
+        <div>
+          <label
+            htmlFor="lead-business"
+            className="block font-label text-xs uppercase tracking-wider text-[#191c1f] font-semibold mb-1.5"
+          >
+            {content.leadForm.businessLabel} <span className="text-[#006d3f]">*</span>
+          </label>
+          <input
+            id="lead-business"
+            type="text"
+            required
+            value={business}
+            onChange={(e) => setBusiness(e.target.value)}
+            placeholder={content.leadForm.businessPlaceholder}
+            className="w-full px-4 py-3 rounded-xl bg-[#f8f9fe] border border-[#b9cbbc]/30 text-sm text-[#191c1f] placeholder:text-[#535d55]/60 focus:outline-none focus:ring-2 focus:ring-[#006d3f] focus:border-transparent transition-all"
+          />
+        </div>
 
-      <button type="submit" className="btn btn-primary mt-8 w-full text-base font-bold shadow-glow">
-        <Send className="h-4 w-4" aria-hidden />
-        <span>{t.submit}</span>
-      </button>
+        {/* Detalles */}
+        <div>
+          <label
+            htmlFor="lead-details"
+            className="block font-label text-xs uppercase tracking-wider text-[#191c1f] font-semibold mb-1.5"
+          >
+            {content.leadForm.detailsLabel} <span className="text-[#006d3f]">*</span>
+          </label>
+          <textarea
+            id="lead-details"
+            required
+            rows={3}
+            value={details}
+            onChange={(e) => setDetails(e.target.value)}
+            placeholder={content.leadForm.detailsPlaceholder}
+            className="w-full px-4 py-3 rounded-xl bg-[#f8f9fe] border border-[#b9cbbc]/30 text-sm text-[#191c1f] placeholder:text-[#535d55]/60 focus:outline-none focus:ring-2 focus:ring-[#006d3f] focus:border-transparent transition-all resize-y"
+          />
+        </div>
 
-      <p id="lead-note" className="mt-4 flex items-center justify-center gap-1.5 text-center text-xs text-fg-subtle">
-        <CheckCircle2 className="h-3.5 w-3.5 text-mint-400 shrink-0" />
-        <span>{t.note}</span>
-      </p>
-    </form>
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full inline-flex items-center justify-center gap-2 h-13 px-6 rounded-full bg-[#26ff9d] text-[#191c1f] font-label text-sm font-bold shadow-[0_4px_20px_-2px_rgba(38,255,157,0.45)] hover:-translate-y-0.5 hover:shadow-[0_8px_28px_-2px_rgba(38,255,157,0.6)] active:translate-y-0 disabled:opacity-60 transition-all cursor-pointer mt-2"
+        >
+          <span>{isSubmitting ? content.leadForm.submitting : content.leadForm.submitButton}</span>
+          <Send size={16} strokeWidth={1.5} />
+        </button>
+
+        <div className="flex items-center justify-center gap-1.5 text-center text-[#535d55] font-label text-[11px] mt-1">
+          <Shield size={13} strokeWidth={1.5} className="text-[#006d3f] shrink-0" />
+          <span>{content.leadForm.privacyNote}</span>
+        </div>
+      </form>
+    </div>
   );
-}
+};

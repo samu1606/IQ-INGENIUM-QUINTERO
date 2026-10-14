@@ -1,62 +1,63 @@
-import { MessageCircle, FileSignature, Hammer, LifeBuoy } from "lucide-react";
-import type { Dictionary } from "@/content";
-import { Reveal, RevealItem } from "./Reveal";
+"use client";
 
-const stepIcons = [MessageCircle, FileSignature, Hammer, LifeBuoy];
-const stepGlows = [
-  "border-mint-400/40 bg-mint-400/15 text-mint-400 shadow-[0_0_20px_-3px_rgba(38,255,157,0.3)]",
-  "border-cyan-400/40 bg-cyan-400/15 text-cyan-400 shadow-[0_0_20px_-3px_rgba(0,240,255,0.3)]",
-  "border-amber-400/40 bg-amber-400/15 text-amber-400 shadow-[0_0_20px_-3px_rgba(255,184,51,0.3)]",
-  "border-mint-400/40 bg-mint-400/15 text-mint-400 shadow-[0_0_20px_-3px_rgba(38,255,157,0.3)]",
-];
+import React from "react";
+import { motion } from "framer-motion";
+import { content } from "@/content";
 
-export function Process({ t }: { t: Dictionary }) {
-  const p = t.process;
+export const Process: React.FC = () => {
   return (
-    <section id="como-trabajamos" className="section relative overflow-hidden">
-      <div className="container-iq relative">
-        <Reveal className="mx-auto max-w-3xl text-center">
-          <p className="eyebrow justify-center">{p.eyebrow}</p>
-          <h2 className="heading-lg mt-4 text-balance">{p.title}</h2>
-        </Reveal>
+    <section className="w-full py-20 sm:py-28 bg-[#f8f9fe]" id="como-trabajamos">
+      <div className="max-w-[1280px] mx-auto px-5 sm:px-8 lg:px-16">
+        {/* Section Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="text-center max-w-2xl mx-auto mb-14 sm:mb-16"
+        >
+          <span className="inline-block px-3.5 py-1 rounded-full bg-[#edeef3] text-[#006d3f] font-label text-xs uppercase tracking-wider mb-3 font-semibold border border-[#b9cbbc]/25">
+            {content.process.badge}
+          </span>
+          <h2 className="font-display text-2xl sm:text-4xl md:text-5xl text-[#191c1f] font-bold tracking-tight">
+            {content.process.titlePrefix}
+            <strong>{content.process.titleStrong}</strong>
+          </h2>
+          <p className="font-body text-base sm:text-lg text-[#3b4a3f] mt-3 leading-relaxed">
+            {content.process.subtitle}
+          </p>
+        </motion.div>
 
-        <div className="relative mt-14 md:mt-20">
-          {/* Línea conectora animada en pantallas grandes */}
-          <div
-            aria-hidden
-            className="absolute left-6 right-6 top-[2.5rem] hidden h-0.5 bg-gradient-to-r from-mint-400 via-cyan-400 to-amber-400 opacity-30 lg:block"
-          />
+        {/* 4 Steps Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 sm:gap-6 relative">
+          {content.process.steps.map((step, idx) => (
+            <motion.div
+              key={step.number}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: idx * 0.1, ease: "easeOut" }}
+              className="bg-white rounded-3xl p-6 sm:p-7 shadow-xs hover:shadow-md transition-shadow border border-[#b9cbbc]/25 flex flex-col justify-between"
+            >
+              <div>
+                <span className="font-display text-3xl sm:text-4xl font-bold text-[#006d3f] block mb-4">
+                  {step.number}
+                </span>
+                <h3 className="font-display text-lg sm:text-xl font-bold text-[#191c1f] mb-2 leading-tight">
+                  {step.title}
+                </h3>
+                <p className="font-body text-xs sm:text-sm text-[#3b4a3f] leading-relaxed">
+                  {step.description}
+                </p>
+              </div>
 
-          <ol className="relative grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {p.steps.map((step, i) => {
-              const Icon = stepIcons[i];
-              const glowClass = stepGlows[i];
-
-              return (
-                <RevealItem key={step.title} delay={i * 0.1} y={24} className="relative">
-                  <div className="card group h-full p-7 transition-all duration-300 hover:border-white/20 hover:-translate-y-1">
-                    <div className="flex items-center justify-between">
-                      <span className={`relative flex h-14 w-14 items-center justify-center rounded-2xl border ${glowClass}`}>
-                        <Icon className="h-6 w-6" aria-hidden />
-                      </span>
-                      <span className="font-display text-4xl font-bold tracking-tight text-white/10 group-hover:text-mint-400/30 transition-colors" aria-hidden>
-                        0{i + 1}
-                      </span>
-                    </div>
-
-                    <h3 className="mt-6 font-display text-xl font-bold text-fg group-hover:text-mint-300 transition-colors">
-                      {step.title}
-                    </h3>
-                    <p className="mt-3 text-sm leading-relaxed text-fg-muted">
-                      {step.description}
-                    </p>
-                  </div>
-                </RevealItem>
-              );
-            })}
-          </ol>
+              <div className="mt-6 pt-3 border-t border-[#b9cbbc]/20 text-[#535d55] font-display text-xs font-medium">
+                {step.phase}
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
   );
-}
+};

@@ -1,112 +1,186 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X } from "lucide-react";
-import type { Dictionary } from "@/content";
-import { whatsappLink } from "@/lib/site";
-import { Logo } from "./Logo";
-import { WhatsAppIcon } from "./icons";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { content } from "@/content";
+import { User, Menu, X, ArrowUpRight } from "lucide-react";
 
-export function Header({ t }: { t: Dictionary }) {
+interface HeaderProps {
+  onOpenLeadForm?: () => void;
+}
+
+export const Header: React.FC<HeaderProps> = ({ onOpenLeadForm }) => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>("");
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+
+      const sections = ["servicios", "como-trabajamos", "por-que-nosotros", "contacto"];
+      const scrollPosition = window.scrollY + 200;
+
+      for (const sectionId of sections) {
+        const el = document.getElementById(sectionId);
+        if (el) {
+          const top = el.offsetTop;
+          const height = el.offsetHeight;
+          if (scrollPosition >= top && scrollPosition < top + height) {
+            setActiveSection(`#${sectionId}`);
+            return;
+          }
+        }
+      }
+      if (window.scrollY < 200) {
+        setActiveSection("");
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [open]);
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    setMobileMenuOpen(false);
+    const targetId = href.replace("#", "");
+    const targetElement = document.getElementById(targetId);
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  const handleCtaClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    setMobileMenuOpen(false);
+    if (onOpenLeadForm) {
+      onOpenLeadForm();
+    }
+    const target = document.getElementById("contacto");
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
-        scrolled || open
-          ? "border-b border-line bg-ink-950/80 backdrop-blur-xl"
-          : "border-b border-transparent"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "bg-[#ffffff]/90 backdrop-blur-xl border-b border-[#b9cbbc]/30 shadow-[0_4px_24px_-4px_rgba(16,24,40,0.06)]"
+          : "bg-[#ffffff]/80 backdrop-blur-md border-b border-[#b9cbbc]/20 shadow-[0_2px_12px_-2px_rgba(16,24,40,0.03)]"
       }`}
     >
-      <a
-        href="#contenido"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-50 focus:rounded-md focus:bg-mint-400 focus:px-3 focus:py-2 focus:text-ink-950"
-      >
-        {t.nav.skip}
-      </a>
-      <div className="container-iq flex h-16 items-center justify-between md:h-[4.5rem]">
-        <a href="#inicio" aria-label={t.brand.name} className="rounded-lg">
-          <Logo name={t.brand.name} alt={t.brand.logoAlt} size={34} />
+      <div className="h-20 max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-16 flex items-center justify-between gap-6">
+        {/* Brand / Logo */}
+        <a
+          href="#"
+          className="flex items-center gap-3 shrink-0 group"
+          onClick={(e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+        >
+          <div className="h-9 w-9 rounded-xl bg-[#006d3f] flex items-center justify-center text-white shadow-sm font-display font-bold text-base tracking-tighter">
+            <span className="text-[#26ff9d]">I</span>Q
+          </div>
+          <span className="font-display font-semibold text-lg text-[#191c1f] tracking-tight group-hover:text-[#006d3f] transition-colors">
+            {content.header.brand}
+          </span>
         </a>
 
-        <nav aria-label="Principal" className="hidden lg:block">
-          <ul className="flex items-center gap-8 text-sm text-fg-muted">
-            {t.nav.links.map((l) => (
-              <li key={l.href}>
-                <a href={l.href} className="transition-colors hover:text-fg">
-                  {l.label}
-                </a>
-              </li>
-            ))}
-          </ul>
+        {/* Desktop Navigation Capsule */}
+        <nav
+          className="hidden lg:flex items-center gap-1 p-1 rounded-full bg-[#f2f3f8]/80 border border-[#b9cbbc]/20"
+          aria-label="Principal"
+        >
+          {content.header.nav.map((item) => {
+            const isActive = activeSection === item.href;
+            return (
+              <a
+                key={item.href}
+                href={item.href}
+                onClick={(e) => handleNavClick(e, item.href)}
+                className={`px-4 py-1.5 rounded-full font-label text-xs font-semibold uppercase tracking-wider transition-all duration-200 ${
+                  isActive
+                    ? "bg-[#e7e8ed] text-[#191c1f] shadow-xs"
+                    : "text-[#3b4a3f] hover:text-[#191c1f] hover:bg-white/50"
+                }`}
+              >
+                {item.label}
+              </a>
+            );
+          })}
         </nav>
 
-        <div className="flex items-center gap-2">
+        {/* Right Action & Mobile Toggle */}
+        <div className="flex items-center gap-3 shrink-0">
           <a
-            href={whatsappLink(t.whatsapp.defaultMessage)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-primary hidden !min-h-10 !px-4 !py-2 text-sm sm:inline-flex"
+            href="#contacto"
+            onClick={handleCtaClick}
+            className="hidden sm:inline-flex items-center justify-center h-11 px-6 rounded-full bg-[#26ff9d] text-[#191c1f] font-label text-sm font-bold shadow-[0_4px_16px_-2px_rgba(38,255,157,0.35)] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-2px_rgba(38,255,157,0.5)] active:translate-y-0 transition-all cursor-pointer"
           >
-            <WhatsAppIcon className="h-4 w-4" />
-            {t.nav.cta}
+            {content.header.cta}
           </a>
+
+          <div
+            className="w-8 h-8 rounded-full bg-[#006d3f] hidden sm:flex items-center justify-center text-white shadow-xs"
+            aria-hidden="true"
+          >
+            <User size={16} strokeWidth={1.5} className="text-[#ffffff]" />
+          </div>
+
+          {/* Mobile Menu Button */}
           <button
             type="button"
-            onClick={() => setOpen((v) => !v)}
-            aria-expanded={open}
-            aria-controls="menu-movil"
-            aria-label={open ? t.nav.closeMenu : t.nav.openMenu}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line-strong text-fg lg:hidden"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="lg:hidden p-2.5 rounded-xl bg-[#f2f3f8] text-[#191c1f] hover:bg-[#e7e8ed] transition-colors focus:outline-none focus:ring-2 focus:ring-[#006d3f]"
+            aria-label={mobileMenuOpen ? content.header.mobileMenuClose : content.header.mobileMenuOpen}
+            aria-expanded={mobileMenuOpen}
           >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {mobileMenuOpen ? <X size={20} strokeWidth={1.5} /> : <Menu size={20} strokeWidth={1.5} />}
           </button>
         </div>
       </div>
 
+      {/* Mobile Dropdown Menu with Framer Motion */}
       <AnimatePresence>
-        {open && (
-          <motion.nav
-            id="menu-movil"
-            aria-label="Móvil"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="overflow-hidden border-t border-line lg:hidden"
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="lg:hidden overflow-hidden border-b border-[#b9cbbc]/30 bg-white/95 backdrop-blur-xl shadow-lg"
           >
-            <ul className="container-iq flex flex-col py-4">
-              {t.nav.links.map((l) => (
-                <li key={l.href}>
+            <div className="px-5 py-6 flex flex-col gap-3">
+              <nav className="flex flex-col gap-2">
+                {content.header.nav.map((item) => (
                   <a
-                    href={l.href}
-                    onClick={() => setOpen(false)}
-                    className="block py-3 font-display text-lg text-fg"
+                    key={item.href}
+                    href={item.href}
+                    onClick={(e) => handleNavClick(e, item.href)}
+                    className="flex items-center justify-between px-4 py-3 rounded-xl text-[#191c1f] font-display text-base font-medium hover:bg-[#f2f3f8] transition-colors"
                   >
-                    {l.label}
+                    <span>{item.label}</span>
+                    <ArrowUpRight size={16} strokeWidth={1.5} className="text-[#6b7b6e]" />
                   </a>
-                </li>
-              ))}
-            </ul>
-          </motion.nav>
+                ))}
+              </nav>
+
+              <div className="pt-2">
+                <a
+                  href="#contacto"
+                  onClick={handleCtaClick}
+                  className="w-full inline-flex items-center justify-center h-12 px-6 rounded-full bg-[#26ff9d] text-[#191c1f] font-label text-sm font-bold shadow-[0_4px_16px_-2px_rgba(38,255,157,0.35)] transition-all cursor-pointer"
+                >
+                  {content.header.cta}
+                </a>
+              </div>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </header>
   );
-}
+};

@@ -1,118 +1,122 @@
-import { Check, X, Sparkles } from "lucide-react";
-import type { Dictionary } from "@/content";
-import { Reveal } from "./Reveal";
+"use client";
 
-type Cell = { ok: boolean; text: string };
+import React from "react";
+import { motion } from "framer-motion";
+import { content } from "@/content";
+import { CheckCircle2, XCircle } from "lucide-react";
 
-function Mark({ cell, highlight = false }: { cell: Cell; highlight?: boolean }) {
+export const Comparison: React.FC = () => {
   return (
-    <span className="flex items-start gap-2.5">
-      <span
-        className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
-          cell.ok
-            ? "bg-mint-400/20 text-mint-400 border border-mint-400/30"
-            : "bg-white/5 text-fg-subtle border border-white/10"
-        }`}
-      >
-        {cell.ok ? <Check className="h-3.5 w-3.5" aria-hidden /> : <X className="h-3.5 w-3.5" aria-hidden />}
-      </span>
-      <span className={highlight ? "font-semibold text-fg" : "text-fg-muted"}>
-        <span className="sr-only">{cell.ok ? "Sí: " : "No: "}</span>
-        {cell.text}
-      </span>
-    </span>
-  );
-}
+    <section className="w-full py-20 sm:py-28 bg-[#f8f9fe]" id="por-que-nosotros">
+      <div className="max-w-[1280px] mx-auto px-5 sm:px-8 lg:px-16">
+        {/* Section Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="text-center max-w-3xl mx-auto mb-14 sm:mb-16"
+        >
+          <span className="inline-block px-3.5 py-1 rounded-full bg-[#edeef3] text-[#006d3f] font-label text-xs uppercase tracking-wider mb-3 font-semibold border border-[#b9cbbc]/25">
+            {content.comparison.badge}
+          </span>
+          <h2 className="font-display text-2xl sm:text-4xl md:text-5xl text-[#191c1f] font-bold tracking-tight">
+            <strong>{content.comparison.titleStrong}</strong>
+            {content.comparison.titleSuffix}
+          </h2>
+          <p className="font-body text-base sm:text-lg text-[#3b4a3f] mt-3 leading-relaxed">
+            {content.comparison.subtitle}
+          </p>
+        </motion.div>
 
-export function Comparison({ t }: { t: Dictionary }) {
-  const c = t.comparison;
-  return (
-    <section id="por-que" className="section relative border-t border-white/10 bg-ink-900/40">
-      <div className="container-iq relative">
-        <Reveal className="max-w-3xl">
-          <p className="eyebrow">{c.eyebrow}</p>
-          <h2 className="heading-lg mt-4 text-balance">{c.title}</h2>
-        </Reveal>
+        {/* Comparison Split Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto items-stretch">
+          {/* Left Card: Con Ingenium Quintero (White, Mint highlights) */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="bg-white rounded-3xl p-7 sm:p-9 shadow-lg border border-[#26ff9d]/40 flex flex-col justify-between relative overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 w-36 h-36 bg-[#26ff9d]/15 rounded-full blur-2xl pointer-events-none" />
 
-        {/* Tabla en Escritorio / Tablet */}
-        <Reveal className="mt-12 hidden md:block md:mt-16" y={30}>
-          <div className="card overflow-hidden rounded-[2rem] border border-white/15 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7)]">
-            <table className="w-full border-collapse text-left text-[0.95rem]">
-              <caption className="sr-only">{c.title}</caption>
-              <thead>
-                <tr className="border-b border-white/10 bg-ink-850">
-                  <th scope="col" className="p-6 text-xs font-bold uppercase tracking-[0.16em] text-fg-subtle">
-                    {c.columns.feature}
-                  </th>
-                  <th scope="col" className="relative bg-mint-400/10 p-6 font-display text-lg font-bold text-mint-300">
-                    <span aria-hidden className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-mint-300 to-mint-400" />
-                    <span className="inline-flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-mint-400" />
-                      {c.columns.us}
+            <div>
+              <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#edeef3]">
+                <h3 className="font-display text-lg sm:text-xl text-[#191c1f] font-bold">
+                  {content.comparison.us.title}
+                </h3>
+                <span className="px-3 py-1 rounded-full bg-[#26ff9d] text-[#191c1f] font-label text-xs font-semibold shadow-xs">
+                  {content.comparison.us.tag}
+                </span>
+              </div>
+
+              <ul className="flex flex-col gap-4">
+                {content.comparison.us.points.map((point) => (
+                  <li key={point} className="flex items-start gap-3">
+                    <CheckCircle2
+                      size={20}
+                      strokeWidth={1.5}
+                      className="text-[#006d3f] shrink-0 mt-0.5"
+                    />
+                    <span className="font-body text-sm sm:text-base text-[#191c1f] font-medium leading-relaxed">
+                      {point}
                     </span>
-                  </th>
-                  <th scope="col" className="p-6 font-display text-base font-semibold text-fg-muted">
-                    {c.columns.agency}
-                  </th>
-                  <th scope="col" className="p-6 font-display text-base font-semibold text-fg-muted">
-                    {c.columns.diy}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {c.rows.map((row) => (
-                  <tr key={row.feature} className="border-b border-white/5 last:border-b-0 hover:bg-white/[0.02]">
-                    <th scope="row" className="p-6 font-display font-bold text-fg">
-                      {row.feature}
-                    </th>
-                    <td className="bg-mint-400/[0.06] p-6">
-                      <Mark cell={row.us} highlight />
-                    </td>
-                    <td className="p-6">
-                      <Mark cell={row.agency} />
-                    </td>
-                    <td className="p-6">
-                      <Mark cell={row.diy} />
-                    </td>
-                  </tr>
+                  </li>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        </Reveal>
+              </ul>
+            </div>
 
-        {/* Tarjetas en Móvil */}
-        <ul className="mt-10 flex flex-col gap-4 md:hidden">
-          {c.rows.map((row) => (
-            <li key={row.feature} className="card p-6 rounded-2xl">
-              <h3 className="font-display text-lg font-bold text-fg">{row.feature}</h3>
-              <dl className="mt-4 space-y-3.5 text-sm">
-                <div className="rounded-xl border border-mint-400/30 bg-mint-400/10 p-4 shadow-[0_0_20px_-5px_rgba(38,255,157,0.2)]">
-                  <dt className="text-xs font-bold uppercase tracking-[0.14em] text-mint-300 flex items-center gap-1.5">
-                    <Sparkles className="h-3.5 w-3.5 text-mint-400" />
-                    {c.columns.us}
-                  </dt>
-                  <dd className="mt-2">
-                    <Mark cell={row.us} highlight />
-                  </dd>
-                </div>
-                <div className="px-2">
-                  <dt className="text-xs font-bold uppercase tracking-[0.14em] text-fg-subtle">{c.columns.agency}</dt>
-                  <dd className="mt-1.5">
-                    <Mark cell={row.agency} />
-                  </dd>
-                </div>
-                <div className="px-2">
-                  <dt className="text-xs font-bold uppercase tracking-[0.14em] text-fg-subtle">{c.columns.diy}</dt>
-                  <dd className="mt-1.5">
-                    <Mark cell={row.diy} />
-                  </dd>
-                </div>
-              </dl>
-            </li>
-          ))}
-        </ul>
+            <div className="mt-8 pt-4 border-t border-[#edeef3]">
+              <span className="font-display text-xs text-[#006d3f] font-semibold flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#26ff9d] shadow-[0_0_8px_#26ff9d]" />
+                {content.comparison.us.footer}
+              </span>
+            </div>
+          </motion.div>
+
+          {/* Right Card: Otras alternativas (Subtle Gray, Cross marks) */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="bg-[#edeef3]/70 rounded-3xl p-7 sm:p-9 border border-[#b9cbbc]/30 flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#b9cbbc]/20">
+                <h3 className="font-display text-lg sm:text-xl text-[#535d55] font-semibold">
+                  {content.comparison.others.title}
+                </h3>
+                <span className="px-3 py-1 rounded-full bg-[#e7e8ed] text-[#535d55] font-label text-xs font-medium">
+                  {content.comparison.others.tag}
+                </span>
+              </div>
+
+              <ul className="flex flex-col gap-4">
+                {content.comparison.others.points.map((point) => (
+                  <li key={point} className="flex items-start gap-3">
+                    <XCircle
+                      size={20}
+                      strokeWidth={1.5}
+                      className="text-[#6b7b6e] shrink-0 mt-0.5"
+                    />
+                    <span className="font-body text-sm sm:text-base text-[#535d55] leading-relaxed">
+                      {point}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="mt-8 pt-4 border-t border-[#b9cbbc]/20">
+              <span className="font-display text-xs text-[#535d55]">
+                {content.comparison.others.footer}
+              </span>
+            </div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );
-}
+};

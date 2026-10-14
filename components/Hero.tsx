@@ -1,173 +1,280 @@
 "use client";
 
-import Image from "next/image";
-import { motion } from "framer-motion";
-import { ArrowDown, CalendarCheck, Check, Sparkles, Zap, ShieldCheck } from "lucide-react";
-import type { Dictionary } from "@/content";
-import { whatsappLink } from "@/lib/site";
-import { WhatsAppIcon } from "./icons";
+import React, { useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { content } from "@/content";
+import {
+  ArrowRight,
+  Bot,
+  Sparkles,
+  FileText,
+  CheckCircle2,
+  MoreVertical,
+} from "lucide-react";
 
-const ease = [0.16, 1, 0.3, 1] as const;
+interface HeroProps {
+  onOpenLeadForm?: () => void;
+}
 
-export function Hero({ t }: { t: Dictionary }) {
-  const h = t.hero;
+export const Hero: React.FC<HeroProps> = ({ onOpenLeadForm }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"],
+  });
+
+  // Subtle, expensive slow float for the cards
+  const yCard1 = useTransform(scrollYProgress, [0, 1], [0, -25]);
+  const yCard2 = useTransform(scrollYProgress, [0, 1], [0, 20]);
+  const yCard3 = useTransform(scrollYProgress, [0, 1], [0, -30]);
+
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   return (
-    <section id="inicio" className="noise relative overflow-hidden pt-28 md:pt-36 pb-20 md:pb-32">
-      {/* Fondo técnico con cuadrícula y esferas de luz vibrantes */}
-      <div aria-hidden className="bg-grid pointer-events-none absolute inset-0 opacity-80" />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-40 left-1/4 h-[38rem] w-[50rem] -translate-x-1/2 rounded-full bg-mint-400/15 blur-[140px] animate-glow-pulse"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute top-20 right-10 h-[30rem] w-[35rem] rounded-full bg-cyan-400/10 blur-[130px] animate-glow-pulse"
-        style={{ animationDelay: "2s" }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute bottom-0 left-1/3 h-[24rem] w-[40rem] rounded-full bg-amber-400/10 blur-[120px]"
-      />
+    <div ref={containerRef} className="relative w-full">
+      {/* HERO SECTION */}
+      <section className="relative w-full overflow-hidden bg-gradient-to-b from-[#eaf4ff] via-[#f2f7fc] to-[#f8f9fe] pt-14 pb-20 sm:pb-28">
+        {/* Ambient luminous glow effects */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[450px] bg-gradient-to-b from-white/90 via-[#26ff9d]/10 to-transparent blur-3xl pointer-events-none -z-10" />
+        <div className="absolute top-1/4 right-[-10%] w-[500px] h-[500px] bg-[#83f3ff]/20 rounded-full blur-[100px] pointer-events-none -z-10" />
 
-      <div className="container-iq relative grid items-center gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-12">
-        {/* Columna Izquierda: Copys y CTAs */}
-        <div className="flex flex-col items-start">
+        <div className="max-w-[1280px] mx-auto px-5 sm:px-8 lg:px-16 flex flex-col items-center text-center">
+          {/* Top Status Pill */}
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease }}
-            className="inline-flex items-center gap-2.5 rounded-full border border-mint-400/30 bg-mint-400/10 px-4 py-2 text-xs font-semibold text-mint-300 shadow-[0_0_20px_-3px_rgba(38,255,157,0.3)] backdrop-blur-md"
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white shadow-xs border border-[#b9cbbc]/20 mb-6"
           >
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="absolute inline-flex h-full w-full animate-pulse-ring rounded-full bg-mint-400" />
-              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-mint-400" />
+            <span className="w-2 h-2 rounded-full bg-[#26ff9d] shadow-[0_0_8px_#26ff9d]" />
+            <span className="font-label text-xs uppercase tracking-wider text-[#191c1f] font-semibold">
+              {content.hero.statusPill}
             </span>
-            <Sparkles className="h-3.5 w-3.5 text-mint-400" aria-hidden />
-            <span>{h.badge}</span>
           </motion.div>
 
+          {/* Main Headline */}
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1, ease }}
-            className="heading-xl mt-6 text-balance text-fg"
+            transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+            className="font-display text-3xl sm:text-5xl md:text-[68px] md:leading-[1.1] text-[#191c1f] font-bold tracking-tight max-w-4xl mx-auto mb-5"
           >
-            {h.titleStart}{" "}
-            <span className="relative inline-block text-gradient-mint">
-              {h.titleAccent}
-              <svg
-                aria-hidden
-                viewBox="0 0 200 12"
-                className="absolute -bottom-2 left-0 h-3 w-full text-mint-400/70"
-                preserveAspectRatio="none"
-              >
-                <path d="M2 9 C 50 2, 150 2, 198 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
-              </svg>
-            </span>
+            {content.hero.titlePrefix}
+            <span className="text-[#006d3f] font-bold">{content.hero.titleHighlight}</span>
+            {content.hero.titleSuffix}
           </motion.h1>
 
+          {/* Clean Editorial Subtitle */}
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2, ease }}
-            className="mt-6 max-w-xl text-lg leading-relaxed text-fg-muted md:text-xl"
+            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+            className="font-body text-base sm:text-lg md:text-xl text-[#3b4a3f] max-w-2xl mx-auto mb-9 leading-relaxed"
           >
-            {h.subtitle}
+            {content.hero.subtitle}
           </motion.p>
 
+          {/* CTA Buttons Group */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3, ease }}
-            className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center w-full sm:w-auto"
+            transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 sm:mb-20 w-full sm:w-auto"
           >
-            <a
-              href={whatsappLink(t.whatsapp.defaultMessage)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-primary text-base w-full sm:w-auto shadow-glow"
+            <button
+              type="button"
+              onClick={() => {
+                if (onOpenLeadForm) onOpenLeadForm();
+                scrollToSection("contacto");
+              }}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 h-12 px-8 rounded-full bg-[#26ff9d] text-[#191c1f] font-label text-sm font-bold shadow-[0_4px_20px_-2px_rgba(38,255,157,0.45)] hover:-translate-y-0.5 hover:shadow-[0_8px_28px_-2px_rgba(38,255,157,0.6)] active:translate-y-0 transition-all cursor-pointer"
             >
-              <WhatsAppIcon className="h-5 w-5" />
-              {h.whatsappCta}
-            </a>
-            <a href="#servicios" className="btn btn-ghost text-base w-full sm:w-auto">
-              {h.primaryCta}
-              <ArrowDown className="h-4 w-4 text-mint-400" aria-hidden />
-            </a>
+              <span>{content.hero.ctaPrimary}</span>
+              <ArrowRight size={18} strokeWidth={1.5} />
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollToSection("servicios")}
+              className="w-full sm:w-auto inline-flex items-center justify-center h-12 px-8 rounded-full bg-white text-[#191c1f] font-label text-sm font-semibold shadow-xs hover:bg-[#f2f3f8] border border-[#b9cbbc]/25 transition-all cursor-pointer"
+            >
+              {content.hero.ctaSecondary}
+            </button>
           </motion.div>
 
-          <motion.ul
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.4, ease }}
-            className="mt-10 flex flex-wrap gap-x-6 gap-y-3 text-sm text-fg-muted"
-          >
-            {h.proof.map((p) => (
-              <li key={p} className="inline-flex items-center gap-2 rounded-lg bg-white/[0.03] px-3 py-1.5 border border-white/5">
-                <Check className="h-4 w-4 text-mint-400" aria-hidden />
-                <span className="font-medium text-fg">{p}</span>
-              </li>
-            ))}
-          </motion.ul>
-        </div>
+          {/* FLOATING CARDS SHOWCASE */}
+          <div className="w-full max-w-[1180px] grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6 items-stretch relative mt-2">
+            {/* Tarjeta 1: WhatsApp AI Bot Simulation */}
+            <motion.div
+              style={{ y: yCard1 }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.35, ease: "easeOut" }}
+              className="md:col-span-5 bg-white rounded-3xl p-6 sm:p-7 shadow-[0_12px_36px_-8px_rgba(16,24,40,0.08)] border border-[#b9cbbc]/25 text-left transform md:-rotate-1 hover:rotate-0 transition-transform duration-300 flex flex-col justify-between"
+            >
+              <div>
+                {/* WhatsApp header bar */}
+                <div className="flex items-center justify-between pb-3 mb-4 border-b border-[#edeef3]">
+                  <div className="flex items-center gap-3">
+                    <div className="relative w-10 h-10 rounded-full bg-[#edeef3] flex items-center justify-center text-[#006d3f]">
+                      <Bot size={20} strokeWidth={1.5} />
+                      <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#26ff9d] rounded-full ring-2 ring-white" />
+                    </div>
+                    <div>
+                      <p className="font-display text-sm font-semibold text-[#191c1f] leading-tight">
+                        {content.hero.card1.botName}
+                      </p>
+                      <p className="font-label text-xs text-[#006d3f] flex items-center gap-1.5 font-medium mt-0.5">
+                        <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#26ff9d] animate-pulse" />
+                        {content.hero.card1.onlineStatus}
+                      </p>
+                    </div>
+                  </div>
+                  <MoreVertical size={18} strokeWidth={1.5} className="text-[#6b7b6e]" />
+                </div>
 
-        {/* Columna Derecha: Imagen del Hero e widgets flotantes */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.94 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.9, delay: 0.2, ease }}
-          className="relative mt-4 lg:mt-0"
-        >
-          {/* Resplandor trasero de la tarjeta principal */}
-          <div aria-hidden className="absolute -inset-2 rounded-[2rem] bg-gradient-to-r from-mint-400/30 via-cyan-400/20 to-amber-400/30 blur-2xl opacity-60" />
+                {/* Chat bubble user */}
+                <div className="flex flex-col items-end mb-3">
+                  <div className="bg-[#f2f3f8] rounded-2xl rounded-tr-xs px-4 py-2.5 max-w-[85%] text-left">
+                    <p className="font-body text-sm text-[#191c1f]">
+                      {content.hero.card1.userMessage}
+                    </p>
+                    <span className="font-label text-[10px] text-[#535d55] text-right block mt-1">
+                      {content.hero.card1.userTime}
+                    </span>
+                  </div>
+                </div>
 
-          <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] border border-white/15 bg-ink-900 shadow-[0_30px_90px_-20px_rgba(0,0,0,0.8)] lg:aspect-[5/4]">
-            <Image
-              src="/hero.jpg"
-              alt={h.imageAlt}
-              fill
-              priority
-              sizes="(min-width: 1024px) 45vw, 100vw"
-              className="object-cover transition-transform duration-1000 hover:scale-105"
-            />
-            <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/20 to-transparent opacity-80" />
+                {/* Chat bubble AI */}
+                <div className="flex flex-col items-start mb-4">
+                  <div className="bg-[#e7fbf2] border border-[#26ff9d]/30 rounded-2xl rounded-tl-xs px-4 py-2.5 max-w-[95%] text-left shadow-2xs">
+                    <div className="flex items-center gap-1.5 text-[#006d3f] font-label text-xs font-semibold mb-1">
+                      <Sparkles size={13} strokeWidth={1.5} />
+                      <span>{content.hero.card1.engineTag}</span>
+                    </div>
+                    <p className="font-body text-sm text-[#191c1f] leading-snug">
+                      {content.hero.card1.botResponsePrefix}
+                      <strong>{content.hero.card1.botResponseHighlight}</strong>
+                      {content.hero.card1.botResponseSuffix}
+                    </p>
+                    <span className="font-label text-[10px] text-[#535d55] block mt-1">
+                      {content.hero.card1.botMeta}
+                    </span>
+                  </div>
+                </div>
+              </div>
 
-            {/* Insignia superior en la imagen */}
-            <div className="absolute top-4 right-4 flex items-center gap-2 rounded-full border border-white/20 bg-ink-950/80 px-3.5 py-1.5 text-xs font-semibold text-fg backdrop-blur-md">
-              <Zap className="h-3.5 w-3.5 text-amber-400" />
-              <span>Respuesta Inmediata</span>
-            </div>
+              {/* Badge tag */}
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#f2f3f8] text-[#191c1f] font-label text-xs font-medium border border-[#b9cbbc]/20 self-start">
+                <span className="w-2 h-2 rounded-full bg-[#26ff9d]" />
+                {content.hero.card1.badgeTag}
+              </div>
+            </motion.div>
+
+            {/* Tarjeta 2: Performance Telemetry Metric */}
+            <motion.div
+              style={{ y: yCard2 }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.45, ease: "easeOut" }}
+              className="md:col-span-3 bg-white rounded-3xl p-6 sm:p-7 shadow-[0_12px_36px_-8px_rgba(16,24,40,0.08)] border border-[#b9cbbc]/25 text-left flex flex-col justify-between transform md:translate-y-4 hover:translate-y-2 transition-transform duration-300"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="font-label text-xs uppercase tracking-wider text-[#535d55] font-semibold">
+                    {content.hero.card2.label}
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full bg-[#26ff9d]/25 text-[#191c1f] font-display text-xs font-semibold">
+                    {content.hero.card2.status}
+                  </span>
+                </div>
+                <p className="font-display text-4xl sm:text-5xl text-[#191c1f] font-bold tracking-tight">
+                  {content.hero.card2.metric}
+                </p>
+                <p className="font-body text-sm text-[#535d55] mt-2 leading-snug">
+                  {content.hero.card2.caption}
+                </p>
+              </div>
+
+              <div className="pt-6">
+                {/* Inline Mini Bar Visualization */}
+                <div className="flex items-end gap-1.5 h-16 pt-2 mb-3">
+                  <div className="flex-1 bg-[#edeef3] rounded-t-sm h-[40%]" />
+                  <div className="flex-1 bg-[#edeef3] rounded-t-sm h-[65%]" />
+                  <div className="flex-1 bg-[#edeef3] rounded-t-sm h-[50%]" />
+                  <div className="flex-1 bg-[#edeef3] rounded-t-sm h-[80%]" />
+                  <div className="flex-1 bg-[#006d3f] rounded-t-sm h-[95%]" />
+                  <div className="flex-1 bg-[#26ff9d] rounded-t-sm h-[100%] shadow-[0_0_12px_#26ff9d]" />
+                </div>
+                <div className="flex justify-between items-center text-[#191c1f] font-display text-[11px]">
+                  <span className="text-[#535d55]">{content.hero.card2.stat1}</span>
+                  <span className="text-[#006d3f] font-semibold">{content.hero.card2.stat2}</span>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Tarjeta 3: Document Intelligence Card */}
+            <motion.div
+              style={{ y: yCard3 }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.55, ease: "easeOut" }}
+              className="md:col-span-4 bg-white rounded-3xl p-6 sm:p-7 shadow-[0_12px_36px_-8px_rgba(16,24,40,0.08)] border border-[#b9cbbc]/25 text-left transform md:rotate-1 hover:rotate-0 transition-transform duration-300 flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <FileText size={20} strokeWidth={1.5} className="text-[#006971]" />
+                  <span className="font-display text-xs font-semibold text-[#191c1f] truncate">
+                    {content.hero.card3.fileName}
+                  </span>
+                </div>
+
+                <div className="bg-[#f2f3f8] rounded-2xl p-4 mb-4 border border-[#b9cbbc]/20">
+                  <span className="font-label text-[11px] uppercase tracking-wider text-[#535d55] block mb-1 font-semibold">
+                    {content.hero.card3.citationLabel}
+                  </span>
+                  <p className="font-body text-sm text-[#191c1f] italic leading-relaxed">
+                    {content.hero.card3.quote}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#83f3ff]/30 text-[#002023] font-label text-xs font-semibold">
+                  <CheckCircle2 size={13} strokeWidth={1.5} className="text-[#006971]" />
+                  {content.hero.card3.verifiedTag}
+                </span>
+                <span className="font-label text-xs text-[#535d55] font-medium">
+                  {content.hero.card3.safetyTag}
+                </span>
+              </div>
+            </motion.div>
           </div>
+        </div>
+      </section>
 
-          {/* Tarjeta flotante 1: Notificación inferior */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6, ease }}
-            className="absolute -bottom-6 left-3 sm:-left-6 flex items-center gap-3.5 rounded-2xl border border-mint-400/30 bg-ink-900/95 p-4 pr-6 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-xl animate-float"
-          >
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-mint-400/20 text-mint-400 border border-mint-400/30">
-              <CalendarCheck className="h-5.5 w-5.5" aria-hidden />
-            </span>
-            <div>
-              <span className="block text-sm font-bold text-fg">{h.floatingCard.title}</span>
-              <span className="block text-xs font-medium text-mint-400">{h.floatingCard.subtitle}</span>
-            </div>
-          </motion.div>
-
-          {/* Tarjeta flotante 2: Garantía de privacidad */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.7, ease }}
-            className="hidden sm:flex absolute -top-5 -left-6 items-center gap-3 rounded-xl border border-cyan-400/30 bg-ink-900/90 px-4 py-2.5 shadow-lg backdrop-blur-md animate-float-slow"
-          >
-            <ShieldCheck className="h-5 w-5 text-cyan-400" />
-            <span className="text-xs font-semibold text-fg">100% Datos Privados</span>
-          </motion.div>
-        </motion.div>
-      </div>
-    </section>
+      {/* SECTOR RECOGNITION STRIP */}
+      <section className="w-full bg-white border-y border-[#edeef3] py-8 sm:py-10">
+        <div className="max-w-[1280px] mx-auto px-5 sm:px-8 lg:px-16 text-center">
+          <p className="font-label text-xs uppercase tracking-widest text-[#535d55] mb-5 font-semibold">
+            {content.sectors.title}
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3.5">
+            {content.sectors.items.map((sector) => (
+              <span
+                key={sector}
+                className="px-4 py-2 rounded-full bg-[#edeef3]/80 text-[#191c1f] font-body text-sm font-medium hover:bg-[#e7e8ed] transition-colors border border-[#b9cbbc]/20"
+              >
+                {sector}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+    </div>
   );
-}
+};

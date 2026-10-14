@@ -1,75 +1,87 @@
+"use client";
+
+import React from "react";
+import { motion } from "framer-motion";
+import { content } from "@/content";
 import {
-  Utensils,
-  Store,
-  Hotel,
-  Stethoscope,
+  HeartPulse,
   Scale,
   Building2,
-  HardHat,
+  ShoppingBag,
   GraduationCap,
   Briefcase,
-  Workflow,
-  type LucideIcon,
-  CheckCircle2,
+  UtensilsCrossed,
+  Headphones,
 } from "lucide-react";
-import type { Dictionary } from "@/content";
-import type { NicheIcon } from "@/content/es";
-import { Reveal, RevealItem } from "./Reveal";
 
-const iconMap: Record<NicheIcon, { icon: LucideIcon; colorClass: string; bgClass: string }> = {
-  utensils: { icon: Utensils, colorClass: "text-mint-400", bgClass: "group-hover:bg-mint-400/15 group-hover:border-mint-400/40" },
-  store: { icon: Store, colorClass: "text-cyan-400", bgClass: "group-hover:bg-cyan-400/15 group-hover:border-cyan-400/40" },
-  hotel: { icon: Hotel, colorClass: "text-amber-400", bgClass: "group-hover:bg-amber-400/15 group-hover:border-amber-400/40" },
-  stethoscope: { icon: Stethoscope, colorClass: "text-mint-400", bgClass: "group-hover:bg-mint-400/15 group-hover:border-mint-400/40" },
-  scale: { icon: Scale, colorClass: "text-cyan-400", bgClass: "group-hover:bg-cyan-400/15 group-hover:border-cyan-400/40" },
-  building: { icon: Building2, colorClass: "text-amber-400", bgClass: "group-hover:bg-amber-400/15 group-hover:border-amber-400/40" },
-  hardHat: { icon: HardHat, colorClass: "text-mint-400", bgClass: "group-hover:bg-mint-400/15 group-hover:border-mint-400/40" },
-  graduationCap: { icon: GraduationCap, colorClass: "text-cyan-400", bgClass: "group-hover:bg-cyan-400/15 group-hover:border-cyan-400/40" },
-  briefcase: { icon: Briefcase, colorClass: "text-amber-400", bgClass: "group-hover:bg-amber-400/15 group-hover:border-amber-400/40" },
-  workflow: { icon: Workflow, colorClass: "text-mint-400", bgClass: "group-hover:bg-mint-400/15 group-hover:border-mint-400/40" },
-};
+export const Niches: React.FC = () => {
+  const getIcon = (type: string) => {
+    switch (type) {
+      case "medical":
+        return <HeartPulse size={26} strokeWidth={1.5} className="text-[#006d3f]" />;
+      case "legal":
+        return <Scale size={26} strokeWidth={1.5} className="text-[#006d3f]" />;
+      case "real_estate":
+        return <Building2 size={26} strokeWidth={1.5} className="text-[#006d3f]" />;
+      case "retail":
+        return <ShoppingBag size={26} strokeWidth={1.5} className="text-[#006d3f]" />;
+      case "education":
+        return <GraduationCap size={26} strokeWidth={1.5} className="text-[#006d3f]" />;
+      case "b2b":
+        return <Briefcase size={26} strokeWidth={1.5} className="text-[#006d3f]" />;
+      case "food":
+        return <UtensilsCrossed size={26} strokeWidth={1.5} className="text-[#006d3f]" />;
+      case "support":
+      default:
+        return <Headphones size={26} strokeWidth={1.5} className="text-[#006d3f]" />;
+    }
+  };
 
-export function Niches({ t }: { t: Dictionary }) {
-  const n = t.niches;
   return (
-    <section id="para-quien" className="section relative border-t border-white/10 bg-ink-900/40">
-      <div className="container-iq relative">
-        <Reveal className="max-w-3xl">
-          <p className="eyebrow">{n.eyebrow}</p>
-          <h2 className="heading-lg mt-4 text-balance">{n.title}</h2>
-        </Reveal>
+    <section className="w-full py-20 sm:py-28 bg-[#f2f3f8]">
+      <div className="max-w-[1280px] mx-auto px-5 sm:px-8 lg:px-16 text-center">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="max-w-3xl mx-auto mb-14"
+        >
+          <span className="inline-block px-3.5 py-1 rounded-full bg-white text-[#3b4a3f] font-label text-xs uppercase tracking-wider mb-3 font-semibold shadow-xs border border-[#b9cbbc]/20">
+            {content.niches.badge}
+          </span>
+          <h2 className="font-display text-2xl sm:text-4xl md:text-5xl text-[#191c1f] tracking-tight">
+            {content.niches.titlePrefix}
+            <strong>{content.niches.titleStrong}</strong>
+            {content.niches.titleSuffix}
+          </h2>
+        </motion.div>
 
-        <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 md:mt-16">
-          {n.items.map((item, i) => {
-            const itemStyle = iconMap[item.icon];
-            const Icon = itemStyle.icon;
-            return (
-              <RevealItem
-                key={item.sector}
-                delay={(i % 5) * 0.06}
-                className="card group flex flex-col justify-between p-6 transition-all duration-300 hover:-translate-y-1"
-              >
-                <div>
-                  <div className={`flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-ink-800 transition-all duration-300 ${itemStyle.bgClass}`}>
-                    <Icon className={`h-6 w-6 ${itemStyle.colorClass}`} aria-hidden />
-                  </div>
-                  <h3 className="mt-5 font-display text-lg font-bold text-fg group-hover:text-mint-300 transition-colors">
-                    {item.sector}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-fg-muted">
-                    {item.pain}
-                  </p>
-                </div>
-                
-                <div className="mt-4 pt-3 border-t border-white/5 flex items-center gap-1.5 text-xs font-semibold text-mint-400">
-                  <CheckCircle2 className="h-3.5 w-3.5" />
-                  <span>Solución lista</span>
-                </div>
-              </RevealItem>
-            );
-          })}
-        </ul>
+        {/* Niches 8-card grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5 max-w-5xl mx-auto text-left">
+          {content.niches.items.map((niche, idx) => (
+            <motion.div
+              key={niche.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: idx * 0.05, ease: "easeOut" }}
+              className="bg-white p-6 rounded-2xl shadow-xs hover:shadow-md hover:-translate-y-1 transition-all duration-200 border border-[#b9cbbc]/20 flex flex-col justify-between"
+            >
+              <div>
+                <div className="mb-3">{getIcon(niche.iconType)}</div>
+                <h3 className="font-display text-base sm:text-lg font-bold text-[#191c1f] mb-1.5 leading-snug">
+                  {niche.title}
+                </h3>
+                <p className="font-body text-xs sm:text-sm text-[#535d55] leading-relaxed">
+                  {niche.desc}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </section>
   );
-}
+};
