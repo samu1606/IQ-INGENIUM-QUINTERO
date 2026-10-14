@@ -1,0 +1,139 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display-hero: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-headline-xl: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-headline-lg: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-headline-md: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-headline-sm: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body-xl: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body-lg: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body-md: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-label-lg: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-label-sm: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-code-mono: 'Space Grotesk', monospace;
+
+  --color-primary: #006d3f;
+  --color-primary-container: #26ff9d;
+  --color-on-primary: #ffffff;
+  --color-on-surface: #191c1f;
+  --color-on-surface-variant: #3b4a3f;
+  --color-surface: #f8f9fe;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f2f3f8;
+  --color-surface-container: #edeef3;
+  --color-surface-container-high: #e7e8ed;
+  --color-surface-container-highest: #e1e2e7;
+  --color-outline: #6b7b6e;
+  --color-outline-variant: #b9cbbc;
+  --color-secondary: #006971;
+  --color-secondary-fixed: #83f3ff;
+  --color-on-secondary-fixed: #002023;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #191c1f;
+    background-color: #f8f9fe;
+  }
+
+  body {
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  button, input, textarea, select {
+    font-family: inherit;
+  }
+}
+
+/* Custom Spacing & Typography Helper Classes matching the HTML design */
+.font-display-hero {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.font-headline-xl {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.font-headline-lg {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.font-headline-md {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.font-headline-sm {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.font-body-xl {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+}
+
+.font-body-lg {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+}
+
+.font-body-md {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+}
+
+.font-label-lg {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.font-label-sm {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.font-code-mono {
+  font-family: 'Space Grotesk', monospace;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* Custom spacing definitions from the design */
+.px-margin-desktop {
+  padding-left: 5rem;
+  padding-right: 5rem;
+}
+
+@media (max-width: 1024px) {
+  .px-margin-desktop {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .px-margin-desktop {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+}

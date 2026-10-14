@@ -1,0 +1,6 @@
+{
+  "name": "Ingenium Quintero - Automatización e Inteligencia Artificial",
+  "description": "Automatización con inteligencia artificial para negocios: bots de WhatsApp, asistentes de documentos y optimización operativa.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
