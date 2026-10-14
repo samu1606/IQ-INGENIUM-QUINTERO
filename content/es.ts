@@ -198,17 +198,17 @@ export const content: ContentSchema = {
     card2: {
       label: "Rendimiento",
       status: "Live 24/7",
-      metric: "99.4%",
-      caption: "Respuestas en menos de 5 segundos sin intervención humana.",
-      stat1: "0 tareas perdidas",
-      stat2: "+420h ahorradas/mes",
+      metric: "24/7",
+      caption: "Ejemplo de tablero. En producción las cifras dependen de tu operación.",
+      stat1: "Nada sin responder",
+      stat2: "Horas que recupera tu equipo",
     },
     card3: {
       fileName: "Expediente_Operativo_2024.pdf",
       citationLabel: "Cita verificada de origen:",
       quote: "“Según la cláusula 14.2 (pág. 48), el plazo de garantía cubre 24 meses sin recargo operativo.”",
       verifiedTag: "Referencia exacta pág. 48",
-      safetyTag: "Cero alucinación",
+      safetyTag: "Cita la fuente exacta",
     },
   },
   sectors: {
@@ -251,8 +251,8 @@ export const content: ContentSchema = {
       title: "Pregúntale a tus documentos",
       description:
         "Lee expedientes, normativas, contratos extensos y manuales técnicos. Tu equipo o clientes obtienen respuestas citando la página exacta con seguridad cifrada.",
-      badgeTitle: "Privacidad Zero-Data Retention",
-      badgeSubtitle: "Tus datos nunca entrenan modelos de terceros.",
+      badgeTitle: "Tus documentos, en tu instalación",
+      badgeSubtitle: "Corren donde tú decidas, no en la nube de un tercero.",
     },
     card3: {
       title: "Que la máquina haga el trabajo repetitivo",
@@ -264,7 +264,7 @@ export const content: ContentSchema = {
       title: "Páginas web y tiendas que venden 24/7",
       description:
         "Desarrollos web ultrarrápidos, con arquitectura a medida, estética limpia e integración nativa con agentes inteligentes preparados para captar transacciones sin fricción.",
-      score: "Lighthouse Score: 99/100",
+      score: "Rendimiento como objetivo",
       badge: "Next-Gen Stack",
     },
   },
@@ -311,7 +311,7 @@ export const content: ContentSchema = {
       },
       {
         title: "Soporte saturado",
-        desc: "Descongestión del 80% de consultas recurrentes.",
+        desc: "Menos consultas repetidas llegando a tu equipo.",
         iconType: "support",
       },
     ],
@@ -362,7 +362,7 @@ export const content: ContentSchema = {
       tag: "Estándar Pro",
       points: [
         "Soluciones a medida que funcionan en tus canales reales sin fricción.",
-        "Respuestas y plazos garantizados formalmente por contrato.",
+        "Alcance y plazos acordados por escrito antes de empezar.",
         "Precio fijo y transparente pactado desde el primer día.",
         "Soporte proactivo y optimización continua de prompts y datos.",
       ],
