@@ -79,19 +79,8 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-[#edeef3] flex flex-col sm:flex-row items-center justify-between gap-4 font-label text-xs text-[#535d55]">
+        <div className="pt-8 border-t border-[#edeef3] text-center font-label text-xs text-[#535d55]">
           <p>{content.footer.copyright}</p>
-          <div className="flex items-center gap-6">
-            {content.footer.legalLinks.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                className="hover:text-[#191c1f] transition-colors"
-              >
-                {item.label}
-              </a>
-            ))}
-          </div>
         </div>
       </div>
     </footer>

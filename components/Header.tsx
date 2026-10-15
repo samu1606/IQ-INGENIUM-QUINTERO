@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { content } from "@/content";
-import { User, Menu, X, ArrowUpRight } from "lucide-react";
+import { Menu, X, ArrowUpRight } from "lucide-react";
 
 interface HeaderProps {
   onOpenLeadForm?: () => void;
@@ -74,12 +74,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenLeadForm }) => {
       <div className="h-20 max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-16 flex items-center justify-between gap-6">
         {/* Brand / Logo */}
         <a
-          href="#"
+          href="#top"
           className="flex items-center gap-3 shrink-0 group"
-          onClick={(e) => {
-            e.preventDefault();
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          }}
         >
           <div className="h-9 w-9 rounded-xl bg-[#006d3f] flex items-center justify-center text-white shadow-sm font-display font-bold text-base tracking-tighter">
             <span className="text-[#26ff9d]">I</span>Q
@@ -122,13 +118,6 @@ export const Header: React.FC<HeaderProps> = ({ onOpenLeadForm }) => {
           >
             {content.header.cta}
           </a>
-
-          <div
-            className="w-8 h-8 rounded-full bg-[#006d3f] hidden sm:flex items-center justify-center text-white shadow-xs"
-            aria-hidden="true"
-          >
-            <User size={16} strokeWidth={1.5} className="text-[#ffffff]" />
-          </div>
 
           {/* Mobile Menu Button */}
           <button

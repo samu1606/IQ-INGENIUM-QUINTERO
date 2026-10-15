@@ -157,7 +157,6 @@ export interface ContentSchema {
     navHeading: string;
     navLinks: Array<{ label: string; href: string }>;
     copyright: string;
-    legalLinks: Array<{ label: string; href: string }>;
   };
 }
 
@@ -190,7 +189,7 @@ export const content: ContentSchema = {
       userTime: "15:42",
       engineTag: "Ingenium Autonomous Engine",
       botResponsePrefix: "¡Perfecto Carlos! He verificado la disponibilidad y tu cita está reservada para mañana a las ",
-      botResponseHighlight: "16:00 hs",
+      botResponseHighlight: "16:00",
       botResponseSuffix: ". Te envié la confirmación al correo.",
       botMeta: "15:42 · Respondido en 1.2s",
       badgeTag: "Nuevo pedido agendado · Sincronizado a CRM",
@@ -425,12 +424,7 @@ export const content: ContentSchema = {
       { label: "Ventajas y Garantías", href: "#por-que-nosotros" },
       { label: "Auditoría Inicial", href: "#contacto" },
     ],
-    copyright: "© 2025 Ingenium Quintero. Todos los derechos reservados.",
-    legalLinks: [
-      { label: "Privacidad", href: "#" },
-      { label: "Términos de Servicio", href: "#" },
-      { label: "Seguridad Operativa", href: "#" },
-    ],
+    copyright: "© 2026 Ingenium Quintero. Todos los derechos reservados.",
   },
 };
 

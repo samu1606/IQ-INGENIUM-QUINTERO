@@ -14,11 +14,6 @@ interface FinalCtaProps {
 export const FinalCta: React.FC<FinalCtaProps> = ({ showFormInitial = false }) => {
   const [showForm, setShowForm] = useState(showFormInitial);
 
-  const handleDirectWhatsApp = () => {
-    const link = whatsappLink(content.whatsappFab.defaultMessage);
-    window.open(link, "_blank", "noopener,noreferrer");
-  };
-
   return (
     <section className="w-full py-20 sm:py-28 bg-[#f8f9fe]" id="contacto">
       <div className="max-w-[1280px] mx-auto px-5 sm:px-8 lg:px-16">
@@ -49,14 +44,15 @@ export const FinalCta: React.FC<FinalCtaProps> = ({ showFormInitial = false }) =
           <div className="w-full max-w-xl flex flex-col items-center gap-4">
             {!showForm ? (
               <div className="flex flex-col items-center gap-4 w-full">
-                <button
-                  type="button"
-                  onClick={handleDirectWhatsApp}
+                <a
+                  href={whatsappLink(content.whatsappFab.defaultMessage)}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 h-14 px-10 rounded-full bg-[#26ff9d] text-[#191c1f] font-label text-base font-bold shadow-[0_6px_24px_-2px_rgba(38,255,157,0.45)] hover:-translate-y-0.5 hover:shadow-[0_10px_32px_-2px_rgba(38,255,157,0.6)] active:translate-y-0 transition-all cursor-pointer"
                 >
                   <span>{content.finalCta.buttonText}</span>
                   <CalendarPlus size={20} strokeWidth={1.5} />
-                </button>
+                </a>
 
                 <div className="flex items-center gap-2 text-[#535d55] font-label text-xs">
                   <CheckCircle2 size={16} strokeWidth={1.5} className="text-[#006d3f]" />

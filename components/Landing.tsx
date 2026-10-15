@@ -23,7 +23,7 @@ export function Landing() {
   const handleOpenLeadForm = () => setShowLeadForm(true);
 
   return (
-    <div className="min-h-screen bg-[#f8f9fe] text-[#191c1f] flex flex-col">
+    <div id="top" className="min-h-screen bg-[#f8f9fe] text-[#191c1f] flex flex-col">
       <Header onOpenLeadForm={handleOpenLeadForm} />
 
       <main className="w-full pt-20 flex-1">

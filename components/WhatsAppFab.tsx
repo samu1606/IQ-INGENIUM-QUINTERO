@@ -6,13 +6,16 @@ import { content } from "@/content";
 import { whatsappLink } from "@/lib/site";
 import { MessageSquareText } from "lucide-react";
 
+/**
+ * El botón flotante de WhatsApp es un ANCLA real, no un botón con
+ * `window.open`. Dos razones, y las dos importan:
+ *  1. Los bloqueadores de ventanas emergentes matan `window.open` cuando no
+ *     va pegado al gesto del usuario.
+ *  2. Un `<a href="https://wa.me/...">` es rastreable y funciona aunque el
+ *     JavaScript no haya cargado.
+ */
 export const WhatsAppFab: React.FC = () => {
   const [hovered, setHovered] = useState(false);
-
-  const handleClick = () => {
-    const link = whatsappLink(content.whatsappFab.defaultMessage);
-    window.open(link, "_blank", "noopener,noreferrer");
-  };
 
   return (
     <div className="fixed bottom-6 right-6 z-40 flex items-center gap-3">
@@ -30,9 +33,10 @@ export const WhatsAppFab: React.FC = () => {
         )}
       </AnimatePresence>
 
-      <motion.button
-        type="button"
-        onClick={handleClick}
+      <motion.a
+        href={whatsappLink(content.whatsappFab.defaultMessage)}
+        target="_blank"
+        rel="noopener noreferrer"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         aria-label={content.whatsappFab.ariaLabel}
@@ -44,7 +48,7 @@ export const WhatsAppFab: React.FC = () => {
           <span className="w-1.5 h-1.5 bg-[#26ff9d] rounded-full animate-ping" />
         </span>
         <MessageSquareText size={26} strokeWidth={1.5} className="text-[#191c1f]" />
-      </motion.button>
+      </motion.a>
     </div>
   );
 };
