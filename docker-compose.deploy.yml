@@ -1,0 +1,41 @@
+# Despliegue de la landing (Next.js) en el VPS.
+#
+# Camino corto: docker compose + las etiquetas de Traefik, el mismo patron con
+# el que ya funciona elInge. Cuando Dokploy tome el relevo, este archivo se
+# puede retirar: la imagen la construye el Dockerfile por si solo.
+#
+#   docker compose -p iq -f docker-compose.deploy.yml up -d --build
+#
+# Para cambiar de dominio (cuando se compre ingeniumquintero.com), se editan
+# las DOS reglas Host(`...`) y se vuelve a levantar. Nada mas.
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: iq-landing:local
+    restart: unless-stopped
+    networks:
+      - dokploy-network
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=dokploy-network
+
+      # HTTP: no sirve nada, solo redirige a HTTPS
+      - traefik.http.routers.iq-landing-web.rule=Host(`iq.elingesmartgrids.cloud`)
+      - traefik.http.routers.iq-landing-web.entrypoints=web
+      - traefik.http.routers.iq-landing-web.middlewares=redirect-to-https@file
+      - traefik.http.routers.iq-landing-web.service=iq-landing-svc
+
+      # HTTPS: sirve, con certificado propio de Let's Encrypt
+      - traefik.http.routers.iq-landing-websecure.rule=Host(`iq.elingesmartgrids.cloud`)
+      - traefik.http.routers.iq-landing-websecure.entrypoints=websecure
+      - traefik.http.routers.iq-landing-websecure.tls.certresolver=letsencrypt
+      - traefik.http.routers.iq-landing-websecure.service=iq-landing-svc
+
+      # El contenedor escucha en el 3000 (lo declara el Dockerfile)
+      - traefik.http.services.iq-landing-svc.loadbalancer.server.port=3000
+
+networks:
+  dokploy-network:
+    external: true
