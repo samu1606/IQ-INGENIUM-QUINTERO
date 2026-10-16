@@ -167,8 +167,12 @@ VPS   /root/work/iq            → la landing de IQ
 VPS   /root/work/agencia       → PENDIENTES.md — el plan y las reglas del negocio
 VPS   elinge/docs/retie_40284/ → los 6 PDFs de la Resolución 40284 (el corpus)
 
-GitHub  samu1606/elIngeSmartGrids
-GitHub  samu1606/iq
+GitHub  samu1606/elIngeSmartGrids        ← elInge (master = producción)
+GitHub  samu1606/IQ-INGENIUM-QUINTERO    ← la landing de IQ
+GitHub  samu1606/rea                     ← REA (#8). NO es IQ.
+
+El viejo samu1606/iq fue renombrado: quedó como remoto «iq-viejo» en los
+clones que ya existían. La URL buena es IQ-INGENIUM-QUINTERO.
 ```
 
 **Lee `PENDIENTES.md` antes de proponer algo.** Ahí están los 17 pendientes, los precios, la
