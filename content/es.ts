@@ -78,6 +78,43 @@ export interface ContentSchema {
       badge: string;
     };
   };
+  /**
+   * Casos. Hoy hay UNO y es propio: elInge Smart Grids, en producción en
+   * elingesmartgrids.cloud. Las cifras que se publican aquí están verificadas
+   * contra el código de producción y contra la API viva (438 pruebas, 22
+   * cálculos, 24 literales, 3 normas) — la fecha va en `evidence.verifiedOn`.
+   * Regla: si un dato no se puede comprobar, no se escribe; y no se inventan
+   * casos para llenar la sección.
+   */
+  casos: {
+    badge: string;
+    titleStrong: string;
+    titleSuffix: string;
+    subtitle: string;
+    caseTag: string;
+    caseTitle: string;
+    caseSubtitle: string;
+    description: string;
+    siteLabel: string;
+    siteUrl: string;
+    highlights: Array<{ title: string; desc: string }>;
+    stats: Array<{ value: string; label: string; source: string }>;
+    ctaLabel: string;
+    ctaMessage: string;
+    evidence: {
+      badge: string;
+      title: string;
+      note: string;
+      requestLabel: string;
+      request: string;
+      responseLabel: string;
+      response: Array<{ key: string; value: string }>;
+      testLabel: string;
+      test: string;
+      verifiedOn: string;
+    };
+    honesty: string;
+  };
   niches: {
     badge: string;
     titlePrefix: string;
@@ -327,6 +364,97 @@ export const content: ContentSchema = {
       badge: "Next-Gen Stack",
     },
   },
+  casos: {
+    badge: "Caso real",
+    titleStrong: "Trabajo que se puede comprobar",
+    titleSuffix: ", no una pared de logos",
+    subtitle:
+      "Publicamos un caso cuando lo podemos demostrar: el producto está en producción, las cifras salen de su propio código y cualquiera puede pedirle una respuesta a su motor. Hoy hay uno.",
+    caseTag: "En producción · elingesmartgrids.cloud",
+    caseTitle: "elInge Smart Grids",
+    caseSubtitle:
+      "Cálculo eléctrico profesional bajo NTC 2050 y RETIE, con memoria de diseño y presupuestos.",
+    description:
+      "Es un producto nuestro: una plataforma web donde el ingeniero eléctrico calcula y documenta una instalación completa —del cuadro de cargas al calibre del conductor, la protección, la puesta a tierra y el documento de diseño— bajo la norma colombiana. Lo construimos de punta a punta: el motor de cálculo, el documento normativo, los presupuestos y el cobro en línea.",
+    siteLabel: "Ver el producto en vivo",
+    siteUrl: "https://elingesmartgrids.cloud",
+    highlights: [
+      {
+        title: "Cada resultado cita la norma",
+        desc: "El motor no devuelve solo un número: devuelve el artículo y la tabla de donde sale — Tabla 310-16, Art. 110-14(c), Art. 210-20(A).",
+      },
+      {
+        title: "Memoria de diseño RETIE",
+        desc: "El documento del Art. 3.3.1.1 con sus 24 literales, de la a) a la x). Los que admiten cálculo salen calculados; los que no, se declaran en vez de simularse.",
+      },
+      {
+        title: "Presupuestos y APU en el mismo producto",
+        desc: "Análisis de precios unitarios, catálogo de materiales y presupuesto final dentro de la misma plataforma donde se calcula la instalación.",
+      },
+      {
+        title: "Cobra dentro de la aplicación",
+        desc: "Suscripción y pago en línea integrados en el producto, con la ruta de cobro servida por la propia aplicación.",
+      },
+    ],
+    stats: [
+      {
+        value: "438",
+        label: "pruebas automáticas en verde",
+        source: "python3 -m unittest discover -s tests",
+      },
+      {
+        value: "22",
+        label: "cálculos expuestos por API",
+        source: "backend/app/routers/calculos.py",
+      },
+      {
+        value: "24",
+        label: "literales del diseño detallado",
+        source: "Res. 40284/2026 · 9 calculados · 15 declarados",
+      },
+      {
+        value: "3",
+        label: "normas soportadas",
+        source: "NTC 2050 · NEC (NFPA 70) · NOM-001-SEDE",
+      },
+    ],
+    ctaLabel: "Quiero algo así para mi negocio",
+    ctaMessage:
+      "Hola Ingenium Quintero, vi el caso de elInge Smart Grids en su web y quiero algo así para mi negocio.",
+    evidence: {
+      badge: "Comprobación",
+      title: "Esto no es una captura de pantalla",
+      note: "Es una petición real al motor que está en producción, con la respuesta tal como la devuelve. Se puede repetir cuando quieras.",
+      requestLabel: "Petición",
+      request: `POST https://api.elingesmartgrids.cloud
+     /api/calculos/seccion
+
+{
+  "potencia_kw": 45,
+  "configuracion": "tri_208",
+  "longitud": 40,
+  "aislamiento": "thhn"
+}`,
+      responseLabel: "Respuesta del motor",
+      response: [
+        { key: "conductor", value: "2/0 AWG (67,43 mm²)" },
+        { key: "conductor de tierra", value: "6 AWG" },
+        { key: "canalización", value: '1-1/2"' },
+        { key: "corriente de diseño", value: "173,48 A (125 % de carga)" },
+        { key: "columna de bornes", value: "75 °C — Art. 110-14(c)(1)(b)" },
+        { key: "caída de tensión", value: "1,93 % (límite pedido: 3 %)" },
+      ],
+      testLabel: "Y sus pruebas, corriendo",
+      test: `$ python3 -m unittest discover -s tests
+Ran 438 tests in 0.651s
+
+OK`,
+      verifiedOn:
+        "Cifras verificadas el 18 de octubre de 2026 contra el código en producción y contra la API en vivo.",
+    },
+    honesty:
+      "Aquí solo hay un caso porque solo hay uno. Preferimos un caso que se puede comprobar a una pared de logos de clientes que todavía no existen: el segundo entra en esta sección el día que esté terminado y funcionando.",
+  },
   niches: {
     badge: "Adaptabilidad comprobada",
     titlePrefix: "Si tu negocio ",
@@ -558,6 +686,7 @@ export const content: ContentSchema = {
     navHeading: "Navegación",
     navLinks: [
       { label: "Servicios de Automatización", href: "#servicios" },
+      { label: "Casos en producción", href: "#casos" },
       { label: "Cómo se cobra y cupos", href: "#precios" },
       { label: "Probar el agente", href: "#demo" },
       { label: "Metodología de Trabajo", href: "#como-trabajamos" },

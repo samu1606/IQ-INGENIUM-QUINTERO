@@ -18,7 +18,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenLeadForm }) => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
 
-      const sections = ["servicios", "precios", "como-trabajamos", "por-que-nosotros", "demo", "contacto"];
+      // «casos» entra en la lista aunque el resaltado dependa del menú: así,
+      // mientras se lee la sección de casos, no queda encendido el ítem
+      // anterior (que es lo que pasa cuando una sección no está en la lista).
+      const sections = ["servicios", "casos", "precios", "como-trabajamos", "por-que-nosotros", "demo", "contacto"];
       const scrollPosition = window.scrollY + 200;
 
       for (const sectionId of sections) {

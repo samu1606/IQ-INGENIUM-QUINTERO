@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Header } from "./Header";
 import { Hero } from "./Hero";
 import { Services } from "./Services";
+import { Casos } from "./Casos";
 import { Pricing } from "./Pricing";
 import { Niches } from "./Niches";
 import { Process } from "./Process";
@@ -31,6 +32,7 @@ export function Landing() {
       <main className="w-full pt-20 flex-1">
         <Hero onOpenLeadForm={handleOpenLeadForm} />
         <Services />
+        <Casos />
         <Pricing />
         <Niches />
         <Process />
