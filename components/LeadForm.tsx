@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { content } from "@/content";
 import { whatsappLink } from "@/lib/site";
+import { EVENTOS, track } from "@/lib/analytics";
 import { Send, CheckCircle2, Shield, AlertCircle } from "lucide-react";
 
 interface LeadFormProps {
@@ -15,8 +16,21 @@ export const LeadForm: React.FC<LeadFormProps> = ({ onSuccess }) => {
   const [details, setDetails] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // Campo trampa: invisible para una persona, irresistible para un bot. Si
+  // llega lleno, el servidor responde «ok» y no guarda nada.
+  const [trampa, setTrampa] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  /**
+   * El orden importa: PRIMERO se guarda el lead en /api/lead, DESPUÉS se abre
+   * WhatsApp.
+   *
+   * Antes solo se abría WhatsApp, así que si el visitante no llegaba a pulsar
+   * «enviar» en la app —o el navegador le bloqueaba la ventana emergente—, ese
+   * caso no quedaba en ninguna parte. Y estaba el `setTimeout` de 400 ms que
+   * empeoraba justo eso: cuanto más se tarde en abrir, más fácil es que el
+   * navegador lo considere una ventana emergente no pedida.
+   */
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !business.trim() || !details.trim()) {
       setError(content.leadForm.errorValidation);
@@ -34,13 +48,44 @@ export const LeadForm: React.FC<LeadFormProps> = ({ onSuccess }) => {
 
     const link = whatsappLink(message);
 
-    setTimeout(() => {
-      setIsSubmitting(false);
-      window.open(link, "_blank", "noopener,noreferrer");
-      if (onSuccess) {
-        onSuccess();
-      }
-    }, 400);
+    try {
+      await fetch("/api/lead", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          nombre: name.trim(),
+          negocio: business.trim(),
+          detalle: details.trim(),
+          origen: "formulario",
+          trampa,
+        }),
+        // Si el servidor se demora, el visitante no se queda mirando la pantalla.
+        signal: AbortSignal.timeout(4000),
+      });
+    } catch {
+      // Que no se guarde no puede impedir que el cliente siga: WhatsApp abre igual.
+    }
+
+    track(EVENTOS.formulario, { detalleLargo: details.trim().length });
+
+    // Abrir WhatsApp. Ojo con el detalle que cuesta una tarde: `window.open`
+    // con «noopener» entre las features devuelve SIEMPRE null (lo dice la
+    // especificación), así que con eso puesto no se puede distinguir «lo
+    // bloqueó» de «abrió bien». Se abre sin features y se corta el `opener` a
+    // mano —mismo efecto de seguridad— para que el null signifique de verdad
+    // que el navegador lo bloqueó; ahí se navega en la misma pestaña, que es
+    // imposible de bloquear y en móvil abre la app.
+    const ventana = window.open(link, "_blank");
+    if (ventana) {
+      ventana.opener = null;
+    } else {
+      window.location.href = link;
+    }
+
+    setIsSubmitting(false);
+    if (onSuccess) {
+      onSuccess();
+    }
   };
 
   return (
@@ -121,6 +166,18 @@ export const LeadForm: React.FC<LeadFormProps> = ({ onSuccess }) => {
             className="w-full px-4 py-3 rounded-xl bg-[#f8f9fe] border border-[#b9cbbc]/30 text-sm text-[#191c1f] placeholder:text-[#535d55]/60 focus:outline-none focus:ring-2 focus:ring-[#006d3f] focus:border-transparent transition-all resize-y"
           />
         </div>
+
+        {/* Trampa para bots: fuera del flujo visual y del orden de tabulación. */}
+        <input
+          type="text"
+          name="trampa"
+          value={trampa}
+          onChange={(e) => setTrampa(e.target.value)}
+          className="hidden"
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+        />
 
         <button
           type="submit"

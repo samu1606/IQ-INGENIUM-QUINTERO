@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk, Plus_Jakarta_Sans } from "next/font/google";
 import { defaultLocale } from "@/content";
 import { site } from "@/lib/site";
+import { Analytics } from "@/components/Analytics";
 import "./globals.css";
 
 /* Las tres fuentes del diseño, auto-alojadas por Next: sin pedidos a Google
@@ -66,7 +67,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang={defaultLocale}
       className={`${inter.variable} ${grotesk.variable} ${jakarta.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }

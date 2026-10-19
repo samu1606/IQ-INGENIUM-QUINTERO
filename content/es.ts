@@ -147,6 +147,65 @@ export interface ContentSchema {
     ariaLabel: string;
     defaultMessage: string;
   };
+  /**
+   * Precios. Los tres renglones y el ancla de comparación salen del documento
+   * de campaña (IQ-CAMPANA-LANZAMIENTO-REDES.md): instalación, mensualidad y
+   * consumo. Se publican así, sin «todo incluido», porque el consumo de Meta y
+   * de IA se factura a costo real y cambia con el uso. Un prospecto que llega
+   * desde el carrusel ya vio estos números: si la página no los tiene, la
+   * página parece que esquiva la pregunta.
+   */
+  pricing: {
+    badge: string;
+    titleStrong: string;
+    titleSuffix: string;
+    subtitle: string;
+    lines: Array<{
+      label: string;
+      amount: string;
+      detail: string;
+      tag: string;
+    }>;
+    comparison: {
+      title: string;
+      puestoLabel: string;
+      puestoAmount: string;
+      puestoDetail: string;
+      agentLabel: string;
+      agentAmount: string;
+      agentDetail: string;
+    };
+    notes: string[];
+    offer: {
+      badge: string;
+      title: string;
+      detail: string;
+      footnote: string;
+    };
+    cta: string;
+  };
+  /**
+   * La demo. El agente contesta de verdad desde /api/demo: si el servidor no
+   * tiene modelo conectado, el widget lo dice y manda a WhatsApp en vez de
+   * quedarse mudo.
+   */
+  demo: {
+    badge: string;
+    titleStrong: string;
+    titleSuffix: string;
+    subtitle: string;
+    placeholder: string;
+    sendLabel: string;
+    thinking: string;
+    intro: string;
+    suggestions: string[];
+    notConfigured: string;
+    errorMsg: string;
+    limitMsg: string;
+    guardrails: string;
+    privacy: string;
+    ctaLabel: string;
+  };
   footer: {
     brand: string;
     brandDescription: string;
@@ -154,6 +213,9 @@ export interface ContentSchema {
     contactHeading: string;
     email: string;
     locations: string;
+    /** Se muestran solo si hay redes cargadas: un enlace vacío es peor que no tenerlo. */
+    socialHeading: string;
+    socials: Array<{ label: string; href: string }>;
     navHeading: string;
     navLinks: Array<{ label: string; href: string }>;
     copyright: string;
@@ -165,6 +227,7 @@ export const content: ContentSchema = {
     brand: "Ingenium Quintero",
     nav: [
       { label: "Servicios", href: "#servicios" },
+      { label: "Precios", href: "#precios" },
       { label: "Cómo trabajamos", href: "#como-trabajamos" },
       { label: "Por qué nosotros", href: "#por-que-nosotros" },
       { label: "Contacto", href: "#contacto" },
@@ -211,7 +274,11 @@ export const content: ContentSchema = {
     },
   },
   sectors: {
-    title: "Sistemas implementados para empresas de diferentes sectores",
+    // Decía «Sistemas implementados para empresas de diferentes sectores». Hoy no
+    // hay ninguna implementación todavía: eso es lo que un prospecto pregunta en
+    // la primera llamada y se cae la credibilidad entera. Los sectores sí son
+    // ciertos (es donde aplica el sistema), lo que sobraba era «implementados».
+    title: "Sectores donde aplicamos estos sistemas",
     items: [
       "Clínicas & Salud",
       "Inmobiliarias",
@@ -325,7 +392,7 @@ export const content: ContentSchema = {
         number: "01",
         title: "Diagnóstico gratis",
         description:
-          "Analizamos tus cuellos de botella actuales y evaluamos qué procesos tienen mayor ROI al automatizar.",
+          "20 minutos contigo, con tus propios números: cuántos mensajes entran fuera de horario y cuánto te cuesta eso al mes. Te llega el informe de una página en menos de 24 horas.",
         phase: "Fase: Descubrimiento",
       },
       {
@@ -385,13 +452,14 @@ export const content: ContentSchema = {
     subtitle:
       "Cuéntanos qué te quita tiempo en el día a día. Te decimos con honestidad técnica si podemos ayudarte y cómo. Sin compromiso alguno.",
     buttonText: "Agendar diagnóstico ahora",
-    guarantee: "Sin tarjeta de crédito · 30 minutos de auditoría práctica",
+    guarantee: "20 minutos · informe de una página con tus propios números, sin costo",
     openFormPrompt: "¿Prefieres escribirnos tu caso en detalle? Completa este breve formulario",
     closeFormPrompt: "Ocultar formulario",
   },
   leadForm: {
     heading: "Cuéntanos sobre tu negocio",
-    subheading: "Al enviar, se abrirá WhatsApp con los detalles organizados para responderte de inmediato.",
+    subheading:
+      "Al enviar, guardamos tu caso y abrimos WhatsApp con el resumen ya escrito. Te responde una persona del equipo, no un bot.",
     nameLabel: "Nombre y apellido",
     namePlaceholder: "Ej. Carlos Martínez",
     businessLabel: "Nombre de tu negocio o sector",
@@ -401,13 +469,94 @@ export const content: ContentSchema = {
       "Ej. Queremos que un bot califique pacientes por WhatsApp, responda consultas frecuentes y agende citas directamente en Google Calendar...",
     submitButton: "Enviar y continuar en WhatsApp",
     submitting: "Abriendo WhatsApp...",
-    privacyNote: "Tus datos son estrictamente confidenciales. Sin spam ni suscripciones.",
+    privacyNote:
+      "Tus datos se usan solo para responderte: no se comparten ni se venden. Al enviar autorizas su tratamiento para contactarte (Ley 1581 de 2012).",
     errorValidation: "Por favor completa todos los campos para poder preparar tu propuesta.",
   },
   whatsappFab: {
     tooltip: "¿Hablamos por WhatsApp?",
     ariaLabel: "Contactar a Ingenium Quintero por WhatsApp",
     defaultMessage: "Hola Ingenium Quintero, me gustaría agendar un diagnóstico gratuito para automatizar procesos en mi negocio.",
+  },
+  pricing: {
+    badge: "Inversión",
+    titleStrong: "Cuánto cuesta",
+    titleSuffix: ", sin letras pequeñas",
+    subtitle:
+      "Tres renglones y nada más. El mismo precio que verás en la propuesta, con el alcance por escrito antes de empezar.",
+    lines: [
+      {
+        label: "Instalación",
+        amount: "desde $2.500.000",
+        detail:
+          "Pago único. Montamos el agente en tus canales reales, lo conectamos a tu CRM y a tu calendario, y lo dejamos hablando como tu negocio.",
+        tag: "Pago único",
+      },
+      {
+        label: "Mensualidad",
+        amount: "desde $950.000",
+        detail:
+          "Cubre hasta 2.000 conversaciones, soporte y el informe del mes con lo que quedó sin responder y lo que se recuperó.",
+        tag: "Cada mes",
+      },
+      {
+        label: "Consumo de Meta y de IA",
+        amount: "≈ $50.000 al mes",
+        detail:
+          "A costo real, medido mensaje por mensaje, para 2.000 conversaciones. No hay margen escondido aquí: se factura aparte.",
+        tag: "A costo",
+      },
+    ],
+    comparison: {
+      title: "Compáralo con lo que ya pagas",
+      puestoLabel: "Un puesto de recepción, 8 horas al día",
+      puestoAmount: "$2.996.645 al mes",
+      puestoDetail:
+        "Mínimo $1.750.905 + auxilio $249.095 + prestaciones, salud, pensión, caja, SENA e ICBF. Cubre hasta las 5 de la tarde.",
+      agentLabel: "El agente, 24 horas al día",
+      agentAmount: "desde $950.000 al mes",
+      agentDetail:
+        "Contesta a las 11:38 de la noche igual que a las 9 de la mañana, y el domingo también. Súmale el consumo (≈ $50.000 al mes) y la instalación, que se paga una sola vez.",
+    },
+    notes: [
+      "Valores en pesos colombianos, IVA aparte.",
+      "El consumo se factura a costo real: si un mes no hay conversaciones, ese renglón casi no se mueve.",
+      "El alcance y los plazos quedan por escrito antes de empezar. Sin cobros por «imprevistos».",
+    ],
+    offer: {
+      badge: "Cupos de lanzamiento",
+      title: "3 cupos con la instalación al 50%",
+      detail:
+        "A cambio del caso de estudio y un testimonio cuando el sistema esté funcionando. La mensualidad no se descuenta.",
+      footnote: "Los cupos se cierran cuando se llenan, no cuando acabe la semana.",
+    },
+    cta: "Quiero uno de los cupos",
+  },
+  demo: {
+    badge: "Demo en vivo",
+    titleStrong: "Pruébalo ahora",
+    titleSuffix: ": escríbele al agente",
+    subtitle:
+      "Esto no es un video ni una captura: es el agente respondiendo de verdad. Pregúntale lo que le preguntaría un cliente tuyo.",
+    placeholder: "Escribe como si fueras tu cliente…",
+    sendLabel: "Enviar",
+    thinking: "Escribiendo…",
+    intro:
+      "Hola, soy el agente de Ingenium Quintero. Cuéntame qué hace tu negocio y qué es lo que más tiempo te quita; te muestro cómo lo atacaría.",
+    suggestions: [
+      "¿Atiendes después de las 8 de la noche?",
+      "¿Puedes agendar citas en mi calendario?",
+      "Soy una clínica dental, ¿qué harías por mí?",
+    ],
+    notConfigured:
+      "La demo en vivo se enciende cuando el servidor tiene un modelo conectado. Escríbeme por WhatsApp y te la muestro funcionando con tu negocio.",
+    errorMsg: "No pude responder en este momento. Intenta de nuevo o escríbeme por WhatsApp.",
+    limitMsg:
+      "Hay mucha gente probando la demo ahora mismo. Espera unos minutos o escríbeme por WhatsApp y te la muestro con tu negocio.",
+    guardrails:
+      "Lo que este agente NO hace: no inventa precios, no da conceptos médicos ni legales y no reemplaza a tu equipo. Cuando algo se sale de su alcance, le pasa el chat a una persona con el resumen.",
+    privacy: "Es una demo pública: no escribas datos personales ni información confidencial.",
+    ctaLabel: "Quiero esto en mi WhatsApp",
   },
   footer: {
     brand: "Ingenium Quintero",
@@ -417,9 +566,18 @@ export const content: ContentSchema = {
     contactHeading: "Contacto Directo",
     email: "contacto@ingeniumquintero.com",
     locations: "Bogotá, Colombia · Trabajo remoto global",
+    socialHeading: "Sígueme",
+    // Vacío a propósito. Un enlace a una red que no existe (o a «#») es peor que
+    // no mostrarla: el componente solo pinta los que estén aquí. Se llena el día
+    // que existan los perfiles, en una línea:
+    //   { label: "Instagram", href: "https://instagram.com/…" },
+    //   { label: "Facebook",  href: "https://facebook.com/…" },
+    socials: [],
     navHeading: "Navegación",
     navLinks: [
       { label: "Servicios de Automatización", href: "#servicios" },
+      { label: "Precios y cupos", href: "#precios" },
+      { label: "Probar el agente", href: "#demo" },
       { label: "Metodología de Trabajo", href: "#como-trabajamos" },
       { label: "Ventajas y Garantías", href: "#por-que-nosotros" },
       { label: "Auditoría Inicial", href: "#contacto" },

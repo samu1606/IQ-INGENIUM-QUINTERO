@@ -4,9 +4,11 @@ import { useState } from "react";
 import { Header } from "./Header";
 import { Hero } from "./Hero";
 import { Services } from "./Services";
+import { Pricing } from "./Pricing";
 import { Niches } from "./Niches";
 import { Process } from "./Process";
 import { Comparison } from "./Comparison";
+import { DemoAgent } from "./DemoAgent";
 import { FinalCta } from "./FinalCta";
 import { Footer } from "./Footer";
 import { WhatsAppFab } from "./WhatsAppFab";
@@ -29,9 +31,11 @@ export function Landing() {
       <main className="w-full pt-20 flex-1">
         <Hero onOpenLeadForm={handleOpenLeadForm} />
         <Services />
+        <Pricing />
         <Niches />
         <Process />
         <Comparison />
+        <DemoAgent />
         <FinalCta showFormInitial={showLeadForm} />
       </main>
 

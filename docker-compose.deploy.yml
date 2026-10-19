@@ -13,8 +13,28 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      # Las NEXT_PUBLIC_* se incrustan al construir (por eso van aquí como
+      # argumentos y no en `environment:`). Cambiar cualquiera de estas exige
+      # `docker compose -p iq -f docker-compose.deploy.yml up -d --build`, no
+      # solo un reinicio. Los valores se leen del .env del servidor.
+      args:
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-https://iq.elingesmartgrids.cloud}
+        NEXT_PUBLIC_UMAMI_SRC: ${NEXT_PUBLIC_UMAMI_SRC:-}
+        NEXT_PUBLIC_UMAMI_ID: ${NEXT_PUBLIC_UMAMI_ID:-}
     image: iq-landing:local
     restart: unless-stopped
+    # Estas se leen en tiempo de ejecución: cambiarlas basta con recrear el
+    # contenedor. Ninguna lleva un valor aquí: salen del .env del VPS, que no
+    # se commitea.
+    environment:
+      - DEMO_LLM_BASE_URL=${DEMO_LLM_BASE_URL:-}
+      - DEMO_LLM_MODEL=${DEMO_LLM_MODEL:-}
+      - DEMO_LLM_API_KEY=${DEMO_LLM_API_KEY:-}
+      - LEAD_STORE_PATH=${LEAD_STORE_PATH:-/app/data/leads.jsonl}
+      - LEAD_WEBHOOK_URL=${LEAD_WEBHOOK_URL:-}
+    volumes:
+      # Sin este volumen, cada `--build` borra los leads que llegaron.
+      - iq-leads:/app/data
     networks:
       - dokploy-network
     labels:
@@ -35,6 +55,9 @@ services:
 
       # El contenedor escucha en el 3000 (lo declara el Dockerfile)
       - traefik.http.services.iq-landing-svc.loadbalancer.server.port=3000
+
+volumes:
+  iq-leads:
 
 networks:
   dokploy-network:

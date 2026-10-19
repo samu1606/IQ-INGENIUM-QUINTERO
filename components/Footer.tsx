@@ -2,6 +2,7 @@
 
 import React from "react";
 import { content } from "@/content";
+import { site, whatsappLink } from "@/lib/site";
 
 export const Footer: React.FC = () => {
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -47,15 +48,54 @@ export const Footer: React.FC = () => {
             <span className="font-label text-xs uppercase tracking-wider text-[#535d55] font-semibold">
               {content.footer.contactHeading}
             </span>
+            {/* WhatsApp primero: es el canal por el que llegan los clientes. Antes
+                solo había un correo, y ese correo vivía en un dominio sin registrar. */}
+            <a
+              href={whatsappLink(content.whatsappFab.defaultMessage)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-display text-lg sm:text-xl font-bold text-[#191c1f] hover:text-[#006d3f] transition-colors"
+            >
+              {site.whatsappDisplay}
+            </a>
+            {/* El número también marcable: hay clientes que prefieren llamar, y
+                sin un enlace `tel:` en móvil no se puede. */}
+            <a
+              href={`tel:+${site.whatsappNumber}`}
+              className="font-body text-sm text-[#3b4a3f] hover:text-[#191c1f] transition-colors"
+            >
+              Llamar: {site.whatsappDisplay}
+            </a>
             <a
               href={`mailto:${content.footer.email}`}
-              className="font-display text-lg sm:text-xl font-bold text-[#191c1f] hover:text-[#006d3f] transition-colors"
+              className="font-body text-sm text-[#3b4a3f] hover:text-[#006d3f] transition-colors break-all"
             >
               {content.footer.email}
             </a>
             <span className="font-body text-sm text-[#3b4a3f]">
               {content.footer.locations}
             </span>
+
+            {content.footer.socials.length > 0 && (
+              <div className="flex flex-col gap-2 mt-3">
+                <span className="font-label text-xs uppercase tracking-wider text-[#535d55] font-semibold">
+                  {content.footer.socialHeading}
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {content.footer.socials.map((red) => (
+                    <a
+                      key={red.label}
+                      href={red.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3.5 py-1.5 rounded-full bg-[#f2f3f8] border border-[#b9cbbc]/25 font-label text-xs text-[#191c1f] hover:border-[#006d3f] transition-colors"
+                    >
+                      {red.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Navegación */}

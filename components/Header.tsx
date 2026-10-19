@@ -18,7 +18,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenLeadForm }) => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
 
-      const sections = ["servicios", "como-trabajamos", "por-que-nosotros", "contacto"];
+      const sections = ["servicios", "precios", "como-trabajamos", "por-que-nosotros", "demo", "contacto"];
       const scrollPosition = window.scrollY + 200;
 
       for (const sectionId of sections) {
