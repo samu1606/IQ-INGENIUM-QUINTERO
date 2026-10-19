@@ -306,14 +306,33 @@ async def recibir(request: Request, tareas: BackgroundTasks):
     except json.JSONDecodeError:
         return JSONResponse({"ok": True})  # 200 igual: que Meta no reintente
 
+    # Traza del payload. Sin esto, un POST que entra y no se contesta deja el
+    # diagnóstico a ciegas: no se sabe si fue un mensaje de verdad, un acuse de
+    # lectura o un evento que no se procesa. Se anotan las CLAVES y los tipos,
+    # nunca el contenido: son conversaciones de clientes.
+    for entrada in cuerpo.get("entry", []):
+        for cambio in entrada.get("changes", []):
+            valor = cambio.get("value", {})
+            tipos = [m.get("type") for m in valor.get("messages", [])]
+            log.info(
+                "payload: campo=%s · mensajes=%d%s · estados=%d",
+                cambio.get("field"),
+                len(valor.get("messages", [])),
+                f" ({','.join(t for t in tipos if t)})" if tipos else "",
+                len(valor.get("statuses", [])),
+            )
+
+    contestados = 0
     for entrada in cuerpo.get("entry", []):
         for cambio in entrada.get("changes", []):
             valor = cambio.get("value", {})
             for msg in valor.get("messages", []):
                 if msg.get("type") != "text":
+                    log.info("se omite un mensaje de tipo %s", msg.get("type"))
                     continue
                 mid = msg.get("id", "")
                 if not mid or ya_visto(mid):
+                    log.info("mensaje repetido o sin id: se omite")
                     continue
                 texto = ((msg.get("text") or {}).get("body") or "").strip()
                 if not texto:
@@ -326,6 +345,9 @@ async def recibir(request: Request, tareas: BackgroundTasks):
                     texto[:MAX_CARACTERES],
                     mid,
                 )
+                contestados += 1
+    if contestados == 0:
+        log.info("nada que contestar en este payload")
 
     # 200 inmediato: el pensamiento va en la tarea de fondo.
     return JSONResponse({"ok": True})
@@ -515,6 +537,19 @@ async def salud(request: Request):
         modelo_ok = httpx.get(f"{OLLAMA_URL}/api/tags", timeout=5).status_code == 200
     except Exception:  # noqa: BLE001
         pass
+
+    # ¿Puede escribir el registro de conversaciones? Si no, el bot contesta y
+    # uno cree que quedó todo guardado, cuando en realidad no se anotó nada.
+    # Pasó de verdad: al pasar el contenedor a usuario sin privilegios, el
+    # archivo seguía siendo de root y las conversaciones se perdían en silencio.
+    registro_ok, registro_error = True, ""
+    try:
+        LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+        with LOG_PATH.open("a", encoding="utf-8"):
+            pass
+    except OSError as e:
+        registro_ok, registro_error = False, str(e)[:160]
+
     return {
         "ok": True,
         "servicio": "IQ WhatsApp bot (prueba)",
@@ -524,5 +559,7 @@ async def salud(request: Request):
         "modelo_disponible": modelo_ok,
         "listo_para_meta": not falta,
         "variables_que_faltan": falta,
+        "registro_escribible": registro_ok,
+        **({"registro_error": registro_error} if not registro_ok else {}),
         "conversaciones_en_memoria": len(_memoria),
     }
