@@ -88,7 +88,10 @@ echo
 # Escribir el .env. Primero un respaldo, por si acaso.
 GV=$(grep -m1 '^WA_GRAPH_VERSION=' "$ENV" | cut -d= -f2- || true)
 [ -n "$GV" ] || GV="v21.0"
-cp "$ENV" "$ENV.bak.$(date +%s)" 2>/dev/null || true
+# El respaldo va FUERA del repo: dentro llevaba el token de Meta a un
+# archivo que git no ignoraba. Los secretos no se respaldan dentro.
+mkdir -p /root/backups/bot-env 2>/dev/null || true
+cp "$ENV" "/root/backups/bot-env/env.$(date +%s)" 2>/dev/null || true
 
 umask 077
 cat > "$ENV" <<EOF
