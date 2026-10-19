@@ -1,0 +1,65 @@
+# Bot de WhatsApp de IQ — versión de prueba.
+#
+#   docker compose -p iqbot -f bot/docker-compose.yml up -d --build
+#
+# La ruta pública es  https://ingeniumquintero.com/wa/webhook
+#
+# ¿Por qué una ruta y no un subdominio? Porque un subdominio nuevo (por ejemplo
+# bot.ingeniumquintero.com) necesita un registro DNS que todavía no existe, y
+# Meta exige el webhook en HTTPS desde el primer minuto. La ruta reutiliza el
+# certificado que el dominio ya tiene y no toca el DNS.
+#
+# Traefik elige solo este router para /wa porque la regla es más larga que la de
+# la landing (que solo lleva `Host`). La landing no se toca.
+services:
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: iq-wa-bot:local
+    restart: unless-stopped
+    environment:
+      # De Meta (los pega Edwin en el .env del VPS, nunca en el repo)
+      - WA_VERIFY_TOKEN=${WA_VERIFY_TOKEN:-}
+      - WA_TOKEN=${WA_TOKEN:-}
+      - WA_PHONE_ID=${WA_PHONE_ID:-}
+      - WA_APP_SECRET=${WA_APP_SECRET:-}
+      - WA_GRAPH_VERSION=${WA_GRAPH_VERSION:-v21.0}
+      # El modelo. Por defecto, el Ollama del propio VPS.
+      - OLLAMA_URL=${OLLAMA_URL:-http://host.docker.internal:11434}
+      - LLM_MODEL=${LLM_MODEL:-qwen2.5:3b}
+      - BOT_LOG_PATH=/app/data/conversaciones.jsonl
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    volumes:
+      # Sin volumen, cada --build borra el registro de conversaciones.
+      - iqbot-data:/app/data
+    networks:
+      - dokploy-network
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=dokploy-network
+      - traefik.http.services.iqbot-svc.loadbalancer.server.port=8000
+
+      - traefik.http.routers.iqbot-web.rule=Host(`ingeniumquintero.com`) && PathPrefix(`/wa`)
+      # La landing tiene una regla MAS LARGA (dos Host), y Traefik desempata
+      # por longitud. Sin esta prioridad explicita, /wa acaba en la landing.
+      - traefik.http.routers.iqbot-web.priority=1000
+      - traefik.http.routers.iqbot-web.entrypoints=web
+      - traefik.http.routers.iqbot-web.middlewares=redirect-to-https@file
+      - traefik.http.routers.iqbot-web.service=iqbot-svc
+
+      - traefik.http.routers.iqbot-websecure.rule=Host(`ingeniumquintero.com`) && PathPrefix(`/wa`)
+      # La landing tiene una regla MAS LARGA (dos Host), y Traefik desempata
+      # por longitud. Sin esta prioridad explicita, /wa acaba en la landing.
+      - traefik.http.routers.iqbot-websecure.priority=1000
+      - traefik.http.routers.iqbot-websecure.entrypoints=websecure
+      - traefik.http.routers.iqbot-websecure.tls.certresolver=letsencrypt
+      - traefik.http.routers.iqbot-websecure.service=iqbot-svc
+
+volumes:
+  iqbot-data:
+
+networks:
+  dokploy-network:
+    external: true
