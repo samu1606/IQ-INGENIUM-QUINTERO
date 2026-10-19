@@ -385,7 +385,7 @@ export const content: ContentSchema = {
         number: "01",
         title: "Diagnóstico gratis",
         description:
-          "20 minutos contigo, con tus propios números: cuántos mensajes entran fuera de horario y cuánto te cuesta eso al mes. Te llega el informe de una página en menos de 24 horas.",
+          "El diagnóstico va con tus propios números: cuántos mensajes entran fuera de horario y cuánto te cuesta eso al mes. Te llega el informe de una página en menos de 24 horas.",
         phase: "Fase: Descubrimiento",
       },
       {
@@ -445,7 +445,7 @@ export const content: ContentSchema = {
     subtitle:
       "Cuéntanos qué te quita tiempo en el día a día. Te decimos con honestidad técnica si podemos ayudarte y cómo. Sin compromiso alguno.",
     buttonText: "Agendar diagnóstico ahora",
-    guarantee: "20 minutos · informe de una página con tus propios números, sin costo",
+    guarantee: "Informe de una página con tus propios números · sin costo",
     openFormPrompt: "¿Prefieres escribirnos tu caso en detalle? Completa este breve formulario",
     closeFormPrompt: "Ocultar formulario",
   },
