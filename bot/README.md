@@ -1,5 +1,50 @@
 # Bot de WhatsApp de IQ — versión de prueba
 
+## ⏸ DÓNDE QUEDÓ (19-oct-2026)
+
+**El bot funciona.** Está construido, desplegado y verificado. Falta el último paso de Meta.
+
+```
+✔ Servicio desplegado      iqbot-bot-1 · corre sin privilegios (uid 10001)
+✔ Webhook público          https://ingeniumquintero.com/wa/webhook
+✔ Handshake de Meta        responde el challenge y 403 con token malo
+✔ Firma verificada         fail-closed: un POST sin firma devuelve 401
+✔ Modelo local             Ollama qwen2.5:3b · ~1,7 s por respuesta
+✔ Credenciales de Meta     verificadas contra la API: +1 555-667-8843
+✔ Los 4 valores puestos    en bot/.env (permisos 600, fuera de git)
+✔ Guardrail probado        ante «¿cuánto cuesta?» NO inventa cifra
+```
+
+**Lo que falta, y es todo de Meta — unos 10 minutos:**
+
+1. **Token permanente.** El que está puesto es **de usuario y caduca el
+   19-oct a las 05:00 UTC**. Hay que sacar uno de **Usuario del sistema**
+   (Business Suite → Configuración → Usuarios → Usuarios del sistema):
+   agregar uno con rol Admin, asignarle la app y la cuenta de WhatsApp, y
+   generar el token con `whatsapp_business_messaging` y
+   `whatsapp_business_management`, sin caducidad.
+   Después: `bash /root/work/iq/bot/configurar.sh`
+
+2. **Configurar el webhook en Meta** (WhatsApp → Configuración → Webhook):
+   `https://ingeniumquintero.com/wa/webhook` + el Verify token que muestra el
+   script → *Verify and save*.
+
+3. **Suscribir el campo `messages`** ← el paso que se olvida. Sin él Meta acepta
+   el webhook y no manda nada.
+
+4. **Probar:** escribir al `+1 555-667-8843` desde el WhatsApp de Edwin.
+
+**Para apagarlo mientras tanto** (no consume nada, pero si se quiere):
+```bash
+docker compose -p iqbot -f bot/docker-compose.yml down
+```
+
+**Una nota que vale para el producto:** cada cliente va a necesitar su propio
+token de **usuario del sistema**, no el temporal del panel. Eso va en la guía
+de instalación del Vocero, o el bot de cada cliente se cae a las 24 horas.
+
+---
+
 Contesta en WhatsApp con IA, usando el **número de prueba** de Meta (gratis, sin
 verificación de negocio, hasta 5 destinatarios). Sirve para probar de punta a
 punta antes de meterse en el papeleo de la cuenta business.
