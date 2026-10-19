@@ -38,6 +38,22 @@ Ojo con dos cosas que no se ven:
 | Lo que el agente de la demo NO puede decir | `lib/demo.ts` → `PROMPT_DEMO` |
 | Imágenes | `public/` |
 
+## Dominio y DNS
+
+El dominio **ingeniumquintero.com** está en Spaceship y su DNS apunta al VPS
+(Traefik enruta por nombre, no por IP: entrar por IP da `404 page not found`, eso
+es normal).
+
+| Tipo | Nombre | Valor | Para qué |
+| --- | --- | --- | --- |
+| A | `@` | `148.230.90.171` | la landing |
+| A | `www` | `148.230.90.171` | el mismo sitio con www |
+
+Traefik pide el certificado de Let's Encrypt por HTTP-01: necesita que el DNS ya
+resuelva al VPS **antes** del `up -d`, o el certificado tarda hasta el siguiente
+intento. El correo va aparte (reenvío de Spaceship: no lleva registros propios
+en este repo).
+
 ## Piezas que no son solo diseño
 
 - **`/api/lead`** — guarda cada lead del formulario (una línea JSON por lead en

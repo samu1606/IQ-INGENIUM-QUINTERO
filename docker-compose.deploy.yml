@@ -6,8 +6,14 @@
 #
 #   docker compose -p iq -f docker-compose.deploy.yml up -d --build
 #
-# Para cambiar de dominio (cuando se compre ingeniumquintero.com), se editan
-# las DOS reglas Host(`...`) y se vuelve a levantar. Nada mas.
+# Para cambiar de dominio se editan las reglas Host(`...`) y se vuelve a
+# levantar. Nada mas.
+#
+# ESTADO: el dominio propio (ingeniumquintero.com) ya está registrado y el DNS
+# apunta al VPS. El despliegue tiene que llevar `--build` con
+# NEXT_PUBLIC_SITE_URL=https://ingeniumquintero.com (ver args abajo), porque si
+# no, el canonical y las previsualizaciones de WhatsApp siguen saliendo con el
+# subdominio viejo.
 services:
   web:
     build:
@@ -41,13 +47,29 @@ services:
       - traefik.enable=true
       - traefik.docker.network=dokploy-network
 
-      # HTTP: no sirve nada, solo redirige a HTTPS
+      # --- El dominio propio: el que se publica ---
+      # Cuando esté en pie y verificado, `www` puede redirigir al ápice; hoy
+      # sirven los dos y el canonical ya apunta al ápice.
+      - traefik.http.routers.iq-web.rule=Host(`ingeniumquintero.com`) || Host(`www.ingeniumquintero.com`)
+      - traefik.http.routers.iq-web.entrypoints=web
+      - traefik.http.routers.iq-web.middlewares=redirect-to-https@file
+      - traefik.http.routers.iq-web.service=iq-landing-svc
+
+      - traefik.http.routers.iq-websecure.rule=Host(`ingeniumquintero.com`) || Host(`www.ingeniumquintero.com`)
+      - traefik.http.routers.iq-websecure.entrypoints=websecure
+      - traefik.http.routers.iq-websecure.tls.certresolver=letsencrypt
+      - traefik.http.routers.iq-websecure.service=iq-landing-svc
+
+      # --- El subdominio donde vivía la landing. Se queda unos días para que
+      #     ninguna URL ya publicada se rompa; se retira con un `up -d` cuando
+      #     el dominio propio lleve un tiempo funcionando. Va en routers
+      #     SEPARADOS a propósito: si el certificado del dominio nuevo tardara
+      #     en emitirse, este no se cae con él.
       - traefik.http.routers.iq-landing-web.rule=Host(`iq.elingesmartgrids.cloud`)
       - traefik.http.routers.iq-landing-web.entrypoints=web
       - traefik.http.routers.iq-landing-web.middlewares=redirect-to-https@file
       - traefik.http.routers.iq-landing-web.service=iq-landing-svc
 
-      # HTTPS: sirve, con certificado propio de Let's Encrypt
       - traefik.http.routers.iq-landing-websecure.rule=Host(`iq.elingesmartgrids.cloud`)
       - traefik.http.routers.iq-landing-websecure.entrypoints=websecure
       - traefik.http.routers.iq-landing-websecure.tls.certresolver=letsencrypt
