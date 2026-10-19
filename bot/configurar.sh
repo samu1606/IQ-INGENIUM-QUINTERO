@@ -70,6 +70,20 @@ echo
 SECRET=$(pedir "App Secret" WA_APP_SECRET "En Configuración → Básica → App Secret → Mostrar.")
 echo
 
+echo "════════════════════════════════════════════════════════"
+echo "  Y tu WhatsApp (para el pase a una persona)"
+echo "════════════════════════════════════════════════════════"
+echo
+echo "  Cuando un cliente pide hablar con alguien, el bot marca la conversación" >&2
+echo "  y te avisa. Sin este número, el bot promete un humano y no avisa a nadie." >&2
+echo "  OJO: el número de prueba solo puede escribirle a destinatarios dados de" >&2
+echo "  alta en Meta, así que tiene que ser uno que ya tengas ahí (por ejemplo el" >&2
+echo "  tuyo, el mismo que agregaste a la lista 'To')." >&2
+echo >&2
+echo "  Formato internacional sin + ni espacios. Ejemplo: 573001234567" >&2
+AVISO=$(pedir "Tu WhatsApp (WA_AVISO_A)" WA_AVISO_A "Para el aviso de pase a humano. Ej: 573001234567")
+echo
+
 # --------------------------------------------------------------------------- #
 # Escribir el .env. Primero un respaldo, por si acaso.
 GV=$(grep -m1 '^WA_GRAPH_VERSION=' "$ENV" | cut -d= -f2- || true)
@@ -84,6 +98,7 @@ WA_VERIFY_TOKEN=$VT
 WA_TOKEN=$TOKEN
 WA_PHONE_ID=$PHONE
 WA_APP_SECRET=$SECRET
+WA_AVISO_A=$AVISO
 WA_GRAPH_VERSION=$GV
 EOF
 chmod 600 "$ENV"
@@ -102,7 +117,7 @@ sleep 12
 
 echo
 echo "  ── el diagnóstico del propio bot ──"
-curl -s --max-time 20 https://ingeniumquintero.com/wa/salud \
+curl -s --max-time 20 "https://ingeniumquintero.com/wa/salud?clave=$VT" \
   | python3 -m json.tool 2>/dev/null || echo "  (no respondió; mira: docker logs iqbot-bot-1)"
 
 echo
