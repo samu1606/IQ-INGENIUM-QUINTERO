@@ -16,6 +16,10 @@
 # subdominio viejo.
 services:
   web:
+    # Para que el contenedor alcance el Ollama del VPS (la demo en vivo).
+    # Sin esto, host.docker.internal no resuelve y la demo se declara apagada.
+    extra_hosts:
+      - host.docker.internal:host-gateway
     build:
       context: .
       dockerfile: Dockerfile
