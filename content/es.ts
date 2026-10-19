@@ -239,7 +239,7 @@ export const content: ContentSchema = {
   hero: {
     statusPill: "Automatización e IA para negocios reales",
     titlePrefix: "Páginas web, ",
-    titleHighlight: "bots de WhatsApp con IA",
+    titleHighlight: "bots y CRM de WhatsApp con IA",
     titleSuffix: " y automatización para cualquier tipo de negocio.",
     subtitle:
       "Desarrollamos sistemas a medida que atienden clientes, responden documentos y eliminan el trabajo repetitivo sin importar tu país.",
@@ -294,22 +294,22 @@ export const content: ContentSchema = {
     titleSuffix: " de dejar de perder tiempo y clientes",
     subtitle: "Arquitectura digital diseñada para captar, cualificar y ejecutar sin cuellos de botella humanos.",
     card1: {
-      tag: "Autónomo 24/7/365",
+      tag: "Bots y CRM · 24/7/365",
       title: "Tu negocio atiende solo, 24/7",
       description:
-        "Responde preguntas frecuentes, califica prospectos en tiempo real, agenda citas y procesa pedidos directo al CRM o canal de WhatsApp. Aunque sean las 3 de la mañana en fin de semana.",
+        "Bots de WhatsApp con IA que responden, califican y agendan solos — y un CRM donde queda cada conversación, cada cliente y cada seguimiento. Aunque sean las 3 de la mañana en fin de semana.",
       pipeline: [
         {
           title: "Captación",
-          desc: "Entrada simultánea WhatsApp, Web y Redes.",
+          desc: "El bot recibe en WhatsApp, Web y Redes.",
         },
         {
           title: "Cualificación",
           desc: "Filtra presupuestos y prioriza valor real.",
         },
         {
-          title: "Cierre",
-          desc: "Citas agendadas y confirmadas en calendario.",
+          title: "CRM y cierre",
+          desc: "Cada lead queda en el pipeline, con su cita agendada.",
         },
       ],
     },
