@@ -9,7 +9,8 @@ npm-debug.log*
 .DS_Store
 
 # El .env del bot lleva el token de Meta
-bot/.env
+bot/.env*
+!bot/.env.example
 
 # Bytecode de Python del bot
 __pycache__/
