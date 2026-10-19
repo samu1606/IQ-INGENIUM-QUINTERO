@@ -450,7 +450,7 @@ Ran 438 tests in 0.651s
 
 OK`,
       verifiedOn:
-        "Cifras verificadas el 18 de octubre de 2026 contra el código en producción y contra la API en vivo.",
+        "Cifras verificadas el 18 y 19 de octubre de 2026 contra el código en producción y contra la API en vivo.",
     },
     honesty:
       "Aquí solo hay un caso porque solo hay uno. Preferimos un caso que se puede comprobar a una pared de logos de clientes que todavía no existen: el segundo entra en esta sección el día que esté terminado y funcionando.",
