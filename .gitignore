@@ -10,3 +10,7 @@ npm-debug.log*
 
 # El .env del bot lleva el token de Meta
 bot/.env
+
+# Bytecode de Python del bot
+__pycache__/
+*.pyc
