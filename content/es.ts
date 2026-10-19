@@ -148,12 +148,14 @@ export interface ContentSchema {
     defaultMessage: string;
   };
   /**
-   * Precios. Los tres renglones y el ancla de comparación salen del documento
-   * de campaña (IQ-CAMPANA-LANZAMIENTO-REDES.md): instalación, mensualidad y
-   * consumo. Se publican así, sin «todo incluido», porque el consumo de Meta y
-   * de IA se factura a costo real y cambia con el uso. Un prospecto que llega
-   * desde el carrusel ya vio estos números: si la página no los tiene, la
-   * página parece que esquiva la pregunta.
+   * Cómo se cobra. Los tres renglones —instalación, mensualidad y consumo— pero
+   * SIN cifras: los números van en la propuesta, con el alcance cerrado.
+   *
+   * La versión anterior publicaba las cifras del precio de campaña y la
+   * comparación contra el puesto de recepción. Edwin pidió quitarlo: el precio
+   * publicado ata la negociación y el ancla de la recepcionista vive mejor en
+   * la campaña y en el diagnóstico que en la página. Lo que se conserva es la
+   * promesa de transparencia, que es lo que el prospecto quiere saber aquí.
    */
   pricing: {
     badge: string;
@@ -162,19 +164,10 @@ export interface ContentSchema {
     subtitle: string;
     lines: Array<{
       label: string;
-      amount: string;
+      headline: string;
       detail: string;
       tag: string;
     }>;
-    comparison: {
-      title: string;
-      puestoLabel: string;
-      puestoAmount: string;
-      puestoDetail: string;
-      agentLabel: string;
-      agentAmount: string;
-      agentDetail: string;
-    };
     notes: string[];
     offer: {
       badge: string;
@@ -227,7 +220,7 @@ export const content: ContentSchema = {
     brand: "Ingenium Quintero",
     nav: [
       { label: "Servicios", href: "#servicios" },
-      { label: "Precios", href: "#precios" },
+      { label: "Cómo se cobra", href: "#precios" },
       { label: "Cómo trabajamos", href: "#como-trabajamos" },
       { label: "Por qué nosotros", href: "#por-que-nosotros" },
       { label: "Contacto", href: "#contacto" },
@@ -480,54 +473,43 @@ export const content: ContentSchema = {
   },
   pricing: {
     badge: "Inversión",
-    titleStrong: "Cuánto cuesta",
-    titleSuffix: ", sin letras pequeñas",
+    titleStrong: "Cómo se cobra",
+    titleSuffix: " en tres renglones",
     subtitle:
-      "Tres renglones y nada más. El mismo precio que verás en la propuesta, con el alcance por escrito antes de empezar.",
+      "Instalación, mensualidad y consumo, y nada más. El número exacto va en la propuesta, por escrito y con el alcance cerrado antes de empezar.",
     lines: [
       {
         label: "Instalación",
-        amount: "desde $2.500.000",
+        headline: "Pago único, según alcance",
         detail:
-          "Pago único. Montamos el agente en tus canales reales, lo conectamos a tu CRM y a tu calendario, y lo dejamos hablando como tu negocio.",
-        tag: "Pago único",
+          "Montamos el agente en tus canales reales, lo conectamos a tu CRM y a tu calendario y lo dejamos hablando como tu negocio. El valor depende del alcance y queda por escrito antes de empezar.",
+        tag: "Una sola vez",
       },
       {
         label: "Mensualidad",
-        amount: "desde $950.000",
+        headline: "Cubre hasta 2.000 conversaciones",
         detail:
-          "Cubre hasta 2.000 conversaciones, soporte y el informe del mes con lo que quedó sin responder y lo que se recuperó.",
+          "Incluye soporte y el informe del mes: qué quedó sin responder, qué se recuperó y qué conviene calibrar.",
         tag: "Cada mes",
       },
       {
         label: "Consumo de Meta y de IA",
-        amount: "≈ $50.000 al mes",
+        headline: "A costo real, facturado aparte",
         detail:
-          "A costo real, medido mensaje por mensaje, para 2.000 conversaciones. No hay margen escondido aquí: se factura aparte.",
+          "Se mide mensaje por mensaje y se factura lo que de verdad se consume. No hay margen escondido aquí.",
         tag: "A costo",
       },
     ],
-    comparison: {
-      title: "Compáralo con lo que ya pagas",
-      puestoLabel: "Un puesto de recepción, 8 horas al día",
-      puestoAmount: "$2.996.645 al mes",
-      puestoDetail:
-        "Mínimo $1.750.905 + auxilio $249.095 + prestaciones, salud, pensión, caja, SENA e ICBF. Cubre hasta las 5 de la tarde.",
-      agentLabel: "El agente, 24 horas al día",
-      agentAmount: "desde $950.000 al mes",
-      agentDetail:
-        "Contesta a las 11:38 de la noche igual que a las 9 de la mañana, y el domingo también. Súmale el consumo (≈ $50.000 al mes) y la instalación, que se paga una sola vez.",
-    },
     notes: [
-      "Valores en pesos colombianos, IVA aparte.",
+      "Todo en pesos colombianos, con el IVA aparte y explícito.",
       "El consumo se factura a costo real: si un mes no hay conversaciones, ese renglón casi no se mueve.",
       "El alcance y los plazos quedan por escrito antes de empezar. Sin cobros por «imprevistos».",
     ],
     offer: {
       badge: "Cupos de lanzamiento",
-      title: "3 cupos con la instalación al 50%",
+      title: "3 cupos con la instalación rebajada",
       detail:
-        "A cambio del caso de estudio y un testimonio cuando el sistema esté funcionando. La mensualidad no se descuenta.",
+        "Los tres primeros negocios entran con un descuento en la instalación, a cambio del caso de estudio y un testimonio cuando el sistema esté funcionando. La mensualidad no se descuenta.",
       footnote: "Los cupos se cierran cuando se llenan, no cuando acabe la semana.",
     },
     cta: "Quiero uno de los cupos",
@@ -576,7 +558,7 @@ export const content: ContentSchema = {
     navHeading: "Navegación",
     navLinks: [
       { label: "Servicios de Automatización", href: "#servicios" },
-      { label: "Precios y cupos", href: "#precios" },
+      { label: "Cómo se cobra y cupos", href: "#precios" },
       { label: "Probar el agente", href: "#demo" },
       { label: "Metodología de Trabajo", href: "#como-trabajamos" },
       { label: "Ventajas y Garantías", href: "#por-que-nosotros" },

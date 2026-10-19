@@ -4,20 +4,21 @@ import React from "react";
 import { motion } from "framer-motion";
 import { content } from "@/content";
 import { whatsappLink } from "@/lib/site";
-import { ArrowRight, Check, Clock, Gift, Building2 } from "lucide-react";
+import { ArrowRight, Check, Gift } from "lucide-react";
 
 /**
- * Precios.
+ * Cómo se cobra.
  *
- * La campaña publica los tres renglones (instalación, mensualidad y consumo) y
- * una oferta de 3 cupos. Quien llega desde el carrusel de Instagram o desde el
- * post de Facebook ya vio esos números: si la página no los tiene, parece que
- * los esconde. Aquí van tal como se publican, sin «todo incluido».
+ * Los tres renglones —instalación, mensualidad y consumo— y la oferta de
+ * cupos, pero SIN cifras: Edwin pidió quitar los números de la página, así que
+ * el precio viaja en la propuesta (y en la campaña, que sí lo publica). Aquí
+ * queda lo que el prospecto necesita para no desconfiar: cómo se cobra, quién
+ * paga el consumo y que el alcance va por escrito.
  */
 export const Pricing: React.FC = () => {
   const { pricing } = content;
   const mensajeCupo =
-    "Hola Ingenium Quintero, quiero uno de los 3 cupos de lanzamiento (instalación al 50%) para automatizar el WhatsApp de mi negocio.";
+    "Hola Ingenium Quintero, quiero uno de los 3 cupos de lanzamiento para automatizar el WhatsApp de mi negocio.";
 
   return (
     <section id="precios" className="w-full py-20 sm:py-28 bg-[#f8f9fe]">
@@ -57,58 +58,16 @@ export const Pricing: React.FC = () => {
                 {linea.tag}
               </span>
               <h3 className="font-display text-lg text-[#3b4a3f] font-semibold mb-1">{linea.label}</h3>
-              <p className="font-display text-2xl sm:text-3xl text-[#191c1f] font-bold tracking-tight mb-4">
-                {linea.amount}
+              {/* Sin cifras a propósito: el número va en la propuesta. Por eso
+                  ya no es un precio en tipografía grande sino el encabezado de
+                  un renglón. */}
+              <p className="font-display text-lg sm:text-xl text-[#191c1f] font-bold tracking-tight mb-4">
+                {linea.headline}
               </p>
               <p className="font-body text-sm text-[#3b4a3f] leading-relaxed">{linea.detail}</p>
             </motion.div>
           ))}
         </div>
-
-        {/* La comparación que vende sola */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="rounded-3xl bg-white border border-[#b9cbbc]/25 shadow-sm p-7 sm:p-9 mb-6"
-        >
-          <h3 className="font-display text-xl sm:text-2xl text-[#191c1f] font-bold tracking-tight mb-6">
-            {pricing.comparison.title}
-          </h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="rounded-2xl bg-[#f2f3f8] border border-[#b9cbbc]/25 p-6 flex flex-col">
-              <div className="flex items-center gap-2 text-[#535d55] mb-4">
-                <Building2 size={18} strokeWidth={1.5} />
-                <span className="font-label text-xs uppercase tracking-wider font-semibold">
-                  {pricing.comparison.puestoLabel}
-                </span>
-              </div>
-              <p className="font-display text-2xl sm:text-3xl text-[#191c1f] font-bold tracking-tight mb-3">
-                {pricing.comparison.puestoAmount}
-              </p>
-              <p className="font-body text-sm text-[#3b4a3f] leading-relaxed">
-                {pricing.comparison.puestoDetail}
-              </p>
-            </div>
-
-            <div className="rounded-2xl bg-[#eafaf1] border border-[#26ff9d]/40 p-6 flex flex-col">
-              <div className="flex items-center gap-2 text-[#006d3f] mb-4">
-                <Clock size={18} strokeWidth={1.5} />
-                <span className="font-label text-xs uppercase tracking-wider font-semibold">
-                  {pricing.comparison.agentLabel}
-                </span>
-              </div>
-              <p className="font-display text-2xl sm:text-3xl text-[#191c1f] font-bold tracking-tight mb-3">
-                {pricing.comparison.agentAmount}
-              </p>
-              <p className="font-body text-sm text-[#3b4a3f] leading-relaxed">
-                {pricing.comparison.agentDetail}
-              </p>
-            </div>
-          </div>
-        </motion.div>
 
         {/* Oferta de lanzamiento */}
         <motion.div
