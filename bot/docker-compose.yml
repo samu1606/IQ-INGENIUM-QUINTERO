@@ -24,7 +24,11 @@ services:
       - WA_TOKEN=${WA_TOKEN:-}
       - WA_PHONE_ID=${WA_PHONE_ID:-}
       - WA_APP_SECRET=${WA_APP_SECRET:-}
+      # A dónde llega el aviso cuando el bot pasa la conversación a una persona
+      # (el WhatsApp de Edwin). Sin esto, el bot promete un humano y no avisa.
+      - WA_AVISO_A=${WA_AVISO_A:-}
       - WA_GRAPH_VERSION=${WA_GRAPH_VERSION:-v21.0}
+      - MAX_CARACTERES=${MAX_CARACTERES:-1200}
       # El modelo. Por defecto, el Ollama del propio VPS.
       - OLLAMA_URL=${OLLAMA_URL:-http://host.docker.internal:11434}
       - LLM_MODEL=${LLM_MODEL:-qwen2.5:3b}

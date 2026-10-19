@@ -9,10 +9,14 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app.py .
 
-# La carpeta del registro de conversaciones tiene que existir y ser escribible:
-# si el volumen se monta vacío, el proceso corre sin privilegios y no podría
-# anotar nada. Sin esto, cada conversación se pierde con un EACCES silencioso.
-RUN mkdir -p /app/data && chmod 777 /app/data
+# Sin privilegios: esto escucha en internet con un webhook público, así que no
+# tiene por qué correr como root (la primera versión sí lo hacía y la carpeta
+# quedaba en 777). El volumen hereda el dueño de esta carpeta.
+RUN useradd --system --uid 10001 --no-create-home bot \
+    && mkdir -p /app/data \
+    && chown -R bot:bot /app/data
+
+USER bot
 
 EXPOSE 8000
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
