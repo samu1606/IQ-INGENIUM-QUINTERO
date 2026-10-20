@@ -55,6 +55,13 @@ GRAPH = f"https://graph.facebook.com/{GRAPH_VERSION}"
 
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://host.docker.internal:11434")
 MODELO = os.environ.get("LLM_MODEL", "qwen2.5:3b")
+
+# Proveedor compatible con OpenAI (OpenCode Go, DeepSeek, OpenAI...). Si está
+# puesto, manda sobre Ollama: es el camino de producción, con un modelo grande.
+# Vacío = Ollama en local, que sirve para probar sin gastar y para clientes que
+# quieran el modelo corriendo en su propia máquina.
+LLM_BASE_URL = os.environ.get("LLM_BASE_URL", "").strip()
+LLM_API_KEY = os.environ.get("LLM_API_KEY", "").strip()
 WEBHOOK_PATH = os.environ.get("WEBHOOK_PATH", "/wa/webhook")
 LOG_PATH = Path(os.environ.get("BOT_LOG_PATH", "/app/data/conversaciones.jsonl"))
 
@@ -362,6 +369,39 @@ async def recibir(request: Request, tareas: BackgroundTasks):
 # El trabajo pesado
 # --------------------------------------------------------------------------- #
 def pensar(historial: list[dict]) -> str:
+    """Habla con el modelo. Dos dialectos, elegidos por configuración:
+
+    - Si hay LLM_BASE_URL (un proveedor compatible con OpenAI, como OpenCode Go),
+      usa /chat/completions. Es el camino bueno: modelos grandes, respuestas en
+      dos o tres segundos y ortografía estable.
+    - Si no, habla con Ollama en local (/api/chat). Sirve para probar sin gastar
+      y para clientes que quieran el modelo en su propia máquina.
+    """
+    if LLM_BASE_URL:
+        r = httpx.post(
+            f"{LLM_BASE_URL.rstrip('/')}/chat/completions",
+            headers={
+                "Authorization": f"Bearer {LLM_API_KEY}",
+                # El plan Go exige esta cabecera: sin ella responde 400
+                # «MissingSessionID». Es un identificador estable, no un
+                # secreto, y sirve al proveedor para enrutar la petición.
+                "x-opencode-session": "iq-whatsapp-bot",
+            },
+            json={
+                "model": MODELO,
+                "messages": historial,
+                "temperature": 0.3,
+                # Los modelos que razonan gastan tokens pensando ANTES de
+                # escribir: con 300 la respuesta salía cortada a media
+                # frase. El tope cubre razonamiento + respuesta.
+                "max_tokens": 1200,
+            },
+            timeout=60,
+        )
+        r.raise_for_status()
+        opciones = r.json().get("choices") or [{}]
+        return ((opciones[0].get("message") or {}).get("content") or "").strip()
+
     r = httpx.post(
         f"{OLLAMA_URL}/api/chat",
         json={"model": MODELO, "messages": historial, "stream": False,
@@ -539,7 +579,15 @@ async def salud(request: Request):
              if not v]
     modelo_ok = False
     try:
-        modelo_ok = httpx.get(f"{OLLAMA_URL}/api/tags", timeout=5).status_code == 200
+        if LLM_BASE_URL:
+            respuesta = httpx.get(
+                f"{LLM_BASE_URL.rstrip('/')}/models",
+                headers={"Authorization": f"Bearer {LLM_API_KEY}"},
+                timeout=8,
+            )
+            modelo_ok = respuesta.status_code == 200
+        else:
+            modelo_ok = httpx.get(f"{OLLAMA_URL}/api/tags", timeout=5).status_code == 200
     except Exception:  # noqa: BLE001
         pass
 
@@ -560,6 +608,7 @@ async def salud(request: Request):
         "servicio": "IQ WhatsApp bot (prueba)",
         "webhook": WEBHOOK_PATH,
         "verificacion_de_firma": bool(APP_SECRET),
+        "proveedor": ("openai-compatible:" + LLM_BASE_URL) if LLM_BASE_URL else "ollama-local",
         "modelo": MODELO,
         "modelo_disponible": modelo_ok,
         "listo_para_meta": not falta,

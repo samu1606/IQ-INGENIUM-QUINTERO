@@ -32,6 +32,12 @@ services:
       # El modelo. Por defecto, el Ollama del propio VPS.
       - OLLAMA_URL=${OLLAMA_URL:-http://host.docker.internal:11434}
       - LLM_MODEL=${LLM_MODEL:-qwen2.5:3b}
+      # Si están puestas, el bot usa un proveedor compatible con OpenAI (OpenCode
+      # Go) en vez de Ollama. Van con valor vacío por defecto a propósito: sin
+      # ellas el bot sigue funcionando en local, y así el compose no obliga a
+      # tener una clave para levantar el servicio.
+      - LLM_BASE_URL=${LLM_BASE_URL:-}
+      - LLM_API_KEY=${LLM_API_KEY:-}
       - BOT_LOG_PATH=/app/data/conversaciones.jsonl
     extra_hosts:
       - host.docker.internal:host-gateway
