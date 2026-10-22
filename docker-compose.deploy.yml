@@ -28,7 +28,7 @@ services:
       # `docker compose -p iq -f docker-compose.deploy.yml up -d --build`, no
       # solo un reinicio. Los valores se leen del .env del servidor.
       args:
-        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-https://iq.elingesmartgrids.cloud}
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-https://ingeniumquintero.com}
         NEXT_PUBLIC_UMAMI_SRC: ${NEXT_PUBLIC_UMAMI_SRC:-}
         NEXT_PUBLIC_UMAMI_ID: ${NEXT_PUBLIC_UMAMI_ID:-}
     image: iq-landing:local
