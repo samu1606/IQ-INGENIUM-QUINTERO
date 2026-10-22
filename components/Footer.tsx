@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { content } from "@/content";
 import { site, whatsappLink } from "@/lib/site";
 
@@ -119,8 +120,21 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-[#edeef3] text-center font-label text-xs text-[#535d55]">
+        <div className="pt-8 border-t border-[#edeef3] flex flex-col sm:flex-row items-center justify-between gap-3 font-label text-xs text-[#535d55]">
           <p>{content.footer.copyright}</p>
+          {/* Páginas legales: Meta las exige para publicar la app de WhatsApp,
+              y un cliente que va a firmar también las busca. */}
+          <div className="flex flex-wrap items-center gap-4">
+            <Link href="/privacidad" className="hover:text-[#006d3f] transition-colors">
+              Política de privacidad
+            </Link>
+            <Link href="/terminos" className="hover:text-[#006d3f] transition-colors">
+              Condiciones del servicio
+            </Link>
+            <Link href="/eliminacion-de-datos" className="hover:text-[#006d3f] transition-colors">
+              Eliminación de datos
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

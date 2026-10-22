@@ -6,8 +6,8 @@ export const site = {
   // así, si un día el despliegue se olvida de fijar NEXT_PUBLIC_SITE_URL, el
   // canonical y las previsualizaciones de WhatsApp siguen saliendo bien.
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://ingeniumquintero.com",
-  whatsappNumber: "573106055920",
-  whatsappDisplay: "+57 310 605 5920",
+  whatsappNumber: "573222668387",
+  whatsappDisplay: "+57 322 266 8387",
   email: "contacto@ingeniumquintero.com",
   locations: "Bogotá, Colombia · Trabajo remoto global",
 };
