@@ -48,10 +48,21 @@ export function rateLimit(
  * local— se usa un marcador fijo: agrupa a todos, que es lo conservador.
  */
 export function clientIp(req: Request): string {
+  // X-Forwarded-For es una cadena que cada proxy va alargando: el visitante
+  // puede escribir la suya, y Traefik añade la real AL FINAL. Quedarse con la
+  // primera —lo que hacía antes— es creerse lo que dice el visitante: bastaba
+  // cambiar la cabecera en cada petición para saltarse el límite por IP, y con
+  // él la contención del gasto en la demo.
+  // La última entrada de la cadena la pone nuestro propio proxy, así que no se
+  // puede falsear. Si no hay cadena, se usa X-Real-Ip, que también fija Traefik.
   const forwarded = req.headers.get("x-forwarded-for");
   if (forwarded) {
-    const primera = forwarded.split(",")[0]?.trim();
-    if (primera) return primera;
+    const partes = forwarded
+      .split(",")
+      .map((p) => p.trim())
+      .filter(Boolean);
+    const ultima = partes[partes.length - 1];
+    if (ultima) return ultima;
   }
   return req.headers.get("x-real-ip")?.trim() || "sin-ip";
 }
