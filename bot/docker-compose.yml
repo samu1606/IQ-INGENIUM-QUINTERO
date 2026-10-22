@@ -38,6 +38,10 @@ services:
       # tener una clave para levantar el servicio.
       - LLM_BASE_URL=${LLM_BASE_URL:-}
       - LLM_API_KEY=${LLM_API_KEY:-}
+      # Gemini por su API nativa. Manda sobre las anteriores si está puesta:
+      # es la puerta que responde con las claves nuevas de AI Studio (AQ.…).
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - GEMINI_MODELO=${GEMINI_MODELO:-gemini-flash-latest}
       - BOT_LOG_PATH=/app/data/conversaciones.jsonl
     extra_hosts:
       - host.docker.internal:host-gateway

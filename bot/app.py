@@ -62,6 +62,17 @@ MODELO = os.environ.get("LLM_MODEL", "qwen2.5:3b")
 # quieran el modelo corriendo en su propia máquina.
 LLM_BASE_URL = os.environ.get("LLM_BASE_URL", "").strip()
 LLM_API_KEY = os.environ.get("LLM_API_KEY", "").strip()
+
+# Gemini por su API nativa. Es la puerta que responde con las claves nuevas de
+# AI Studio (las que empiezan por AQ.): el endpoint compatible con OpenAI, con
+# esa misma clave, no contesta (curl se queda sin respuesta). Medido el 20-oct.
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
+GEMINI_MODELO = os.environ.get("GEMINI_MODELO", "gemini-flash-latest").strip()
+GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models"
+
+# Modelo del Ollama local, independiente del de la nube. Si se deja vacío usa
+# el de siempre: el último recurso tiene que existir aunque la nube falle.
+OLLAMA_MODELO = os.environ.get("OLLAMA_MODELO", "qwen2.5:3b").strip()
 WEBHOOK_PATH = os.environ.get("WEBHOOK_PATH", "/wa/webhook")
 LOG_PATH = Path(os.environ.get("BOT_LOG_PATH", "/app/data/conversaciones.jsonl"))
 
@@ -368,52 +379,104 @@ async def recibir(request: Request, tareas: BackgroundTasks):
 # --------------------------------------------------------------------------- #
 # El trabajo pesado
 # --------------------------------------------------------------------------- #
-def pensar(historial: list[dict]) -> str:
-    """Habla con el modelo. Dos dialectos, elegidos por configuración:
+def _pensar_gemini(historial: list[dict]) -> str:
+    """API nativa de Gemini. El system prompt va aparte y los turnos usan "model"."""
+    sistema = "\n\n".join(m["content"] for m in historial if m["role"] == "system")
+    turnos = [
+        {"role": "model" if m["role"] == "assistant" else "user",
+         "parts": [{"text": m["content"]}]}
+        for m in historial if m["role"] != "system"
+    ]
+    cuerpo = {
+        "contents": turnos,
+        "generationConfig": {"temperature": 0.3, "maxOutputTokens": 1200},
+    }
+    if sistema:
+        cuerpo["systemInstruction"] = {"parts": [{"text": sistema}]}
+    r = httpx.post(
+        f"{GEMINI_URL}/{GEMINI_MODELO}:generateContent",
+        headers={"x-goog-api-key": GEMINI_API_KEY},
+        json=cuerpo,
+        timeout=45,
+    )
+    r.raise_for_status()
+    candidato = (r.json().get("candidates") or [{}])[0]
+    partes = (candidato.get("content") or {}).get("parts") or []
+    return "".join(p.get("text", "") for p in partes).strip()
 
-    - Si hay LLM_BASE_URL (un proveedor compatible con OpenAI, como OpenCode Go),
-      usa /chat/completions. Es el camino bueno: modelos grandes, respuestas en
-      dos o tres segundos y ortografía estable.
-    - Si no, habla con Ollama en local (/api/chat). Sirve para probar sin gastar
-      y para clientes que quieran el modelo en su propia máquina.
-    """
-    if LLM_BASE_URL:
-        r = httpx.post(
-            f"{LLM_BASE_URL.rstrip('/')}/chat/completions",
-            headers={
-                "Authorization": f"Bearer {LLM_API_KEY}",
-                # El plan Go exige esta cabecera: sin ella responde 400
-                # «MissingSessionID». Es un identificador estable, no un
-                # secreto, y sirve al proveedor para enrutar la petición.
-                "x-opencode-session": "iq-whatsapp-bot",
-            },
-            json={
-                "model": MODELO,
-                "messages": historial,
-                "temperature": 0.3,
-                # Los modelos que razonan gastan tokens pensando ANTES de
-                # escribir: con 300 la respuesta salía cortada a media
-                # frase. El tope cubre razonamiento + respuesta.
-                "max_tokens": 1200,
-            },
-            timeout=60,
-        )
-        r.raise_for_status()
-        opciones = r.json().get("choices") or [{}]
-        return ((opciones[0].get("message") or {}).get("content") or "").strip()
 
+def _pensar_openai(historial: list[dict]) -> str:
+    """Cualquier proveedor compatible con OpenAI (hoy: OpenCode Go)."""
+    r = httpx.post(
+        f"{LLM_BASE_URL.rstrip('/')}/chat/completions",
+        headers={
+            "Authorization": f"Bearer {LLM_API_KEY}",
+            # El plan Go exige esta cabecera: sin ella responde 400
+            # «MissingSessionID». Es un identificador estable, no un secreto.
+            "x-opencode-session": "iq-whatsapp-bot",
+        },
+        json={
+            "model": MODELO,
+            "messages": historial,
+            "temperature": 0.3,
+            # Los modelos que razonan gastan tokens pensando ANTES de escribir:
+            # con 300 la respuesta salía cortada a media frase.
+            "max_tokens": 1200,
+        },
+        timeout=45,
+    )
+    r.raise_for_status()
+    opciones = r.json().get("choices") or [{}]
+    return ((opciones[0].get("message") or {}).get("content") or "").strip()
+
+
+def _pensar_ollama(historial: list[dict]) -> str:
+    """Modelo local. Sirve para probar sin gastar y para clientes con su máquina."""
     r = httpx.post(
         f"{OLLAMA_URL}/api/chat",
-        json={"model": MODELO, "messages": historial, "stream": False,
-              "options": {"temperature": 0.3, "num_predict": 300,
-                          # repeat_penalty y top_p reducen los enredos de
-                          # repetición del 3B; no los eliminan (para eso está
-                          # `respuesta_degenerada`), pero bajan la frecuencia.
+        json={"model": OLLAMA_MODELO, "messages": historial, "stream": False,
+              "options": {"temperature": 0.3, "num_predict": 1200,
                           "repeat_penalty": 1.3, "top_p": 0.9}},
         timeout=90,
     )
     r.raise_for_status()
     return (r.json().get("message") or {}).get("content", "").strip()
+
+
+def pensar(historial: list[dict]) -> str:
+    """Contesta con el primer proveedor que funcione.
+
+    Relevo en cadena a propósito: el 20-oct Gemini contestó bien en una prueba y
+    después devolvió 503 y timeouts en cuatro seguidas. Un bot de ventas no puede
+    quedarse mudo porque un proveedor tenga un mal rato, así que si uno falla o
+    devuelve vacío, se prueba el siguiente y al cliente se le contesta igual.
+    """
+    # Orden por velocidad medida, no por preferencia: OpenCode contesta en
+    # 1,2-2,8 s y Gemini en 3-7 s (y de vez en cuando devuelve 503). El que
+    # atiende primero es el rápido; el otro espera como respaldo. Poner a Gemini
+    # delante duplicaba el tiempo de cada respuesta porque el relevo solo entra
+    # cuando el primero termina de fallar.
+    relevos = []
+    if LLM_BASE_URL and LLM_API_KEY:
+        relevos.append(("openai-compatible", _pensar_openai))
+    if GEMINI_API_KEY:
+        relevos.append(("gemini", _pensar_gemini))
+    relevos.append(("ollama", _pensar_ollama))
+
+    fallos = []
+    for nombre, fn in relevos:
+        try:
+            texto = fn(historial)
+            if texto:
+                if fallos:
+                    log.info("contestó %s tras fallar: %s", nombre, ", ".join(fallos))
+                return texto
+            fallos.append(nombre + ": vacío")
+        except Exception as e:  # noqa: BLE001
+            fallos.append(f"{nombre}: {str(e)[:60]}")
+            log.warning("proveedor %s falló: %s", nombre, str(e)[:160])
+
+    raise RuntimeError("ningún proveedor contestó — " + " | ".join(fallos))
 
 
 def enviar(telefono: str, texto: str) -> bool:
@@ -578,7 +641,15 @@ async def salud(request: Request):
                             ("WA_AVISO_A", WA_AVISO_A))
              if not v]
     modelo_ok = False
+    gemini_ok = openai_ok = False
     try:
+        if GEMINI_API_KEY:
+            respuesta = httpx.get(
+                GEMINI_URL,
+                headers={"x-goog-api-key": GEMINI_API_KEY},
+                timeout=10,
+            )
+            gemini_ok = respuesta.status_code == 200
         if LLM_BASE_URL:
             respuesta = httpx.get(
                 f"{LLM_BASE_URL.rstrip('/')}/models",
@@ -586,8 +657,8 @@ async def salud(request: Request):
                 timeout=8,
             )
             modelo_ok = respuesta.status_code == 200
-        else:
-            modelo_ok = httpx.get(f"{OLLAMA_URL}/api/tags", timeout=5).status_code == 200
+            openai_ok = respuesta.status_code == 200
+        modelo_ok = gemini_ok or openai_ok
     except Exception:  # noqa: BLE001
         pass
 
@@ -608,9 +679,13 @@ async def salud(request: Request):
         "servicio": "IQ WhatsApp bot (prueba)",
         "webhook": WEBHOOK_PATH,
         "verificacion_de_firma": bool(APP_SECRET),
-        "proveedor": ("openai-compatible:" + LLM_BASE_URL) if LLM_BASE_URL else "ollama-local",
-        "modelo": MODELO,
+        "proveedor": ("openai-compatible:" + LLM_BASE_URL) if LLM_BASE_URL
+                     else (("gemini:" + GEMINI_MODELO) if GEMINI_API_KEY else "ollama-local"),
+        "modelo": MODELO if LLM_BASE_URL else GEMINI_MODELO,
         "modelo_disponible": modelo_ok,
+        "proveedores": {"gemini": gemini_ok,
+                        "openai-compatible": openai_ok,
+                        "ollama": not (gemini_ok or openai_ok)},
         "listo_para_meta": not falta,
         "variables_que_faltan": falta,
         "registro_escribible": registro_ok,

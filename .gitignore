@@ -15,3 +15,11 @@ bot/.env*
 # Bytecode de Python del bot
 __pycache__/
 *.pyc
+
+# Clave de Gemini para el bot (nunca al repo)
+bot/.gemini_key
+.gemini_key
+
+# Clave de OpenCode para el bot (nunca al repo)
+bot/.opencode_key
+.opencode_key
