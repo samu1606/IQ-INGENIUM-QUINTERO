@@ -572,13 +572,50 @@ def avisar_equipo(telefono: str, entra: str, sale: str) -> None:
                f"Cliente: +{telefono}\n"
                f"Escribió: {entra[:300]}\n"
                f"El bot dijo: {sale[:300]}")
+
+    # El aviso interno NO puede salir hacia el número del propio cliente.
+    # Pasó de verdad: Edwin probaba el bot desde su celular, que es también el
+    # número de avisos, y recibió el texto interno («el bot pasó a humano,
+    # cliente…») como si fuera el cliente. Un cliente real escribiría desde ahí
+    # y vería lo mismo. En ese caso no se manda por WhatsApp: se encola para
+    # Telegram, que no depende de la ventana de 24 h ni de números de Meta.
+    if WA_AVISO_A and WA_AVISO_A.strip() == telefono.strip():
+        log.warning("pase a humano: el número de avisos es el del cliente, "
+                    "no se envía por WhatsApp (va a la cola de Telegram)")
+        encolar_pase(telefono, entra, sale)
+        return
+
     if not WA_AVISO_A:
         log.warning("pase a humano SIN avisar: falta WA_AVISO_A (número de avisos)")
+        encolar_pase(telefono, entra, sale)
         return
+
     if enviar(WA_AVISO_A, resumen):
         log.info("aviso de pase enviado a %s", WA_AVISO_A[-4:])
     else:
         log.warning("no se pudo enviar el aviso de pase (revisa las credenciales)")
+        encolar_pase(telefono, entra, sale)
+
+
+def encolar_pase(telefono: str, entra: str, sale: str) -> None:
+    """Deja el pase en una cola que Hermes lee y manda a Telegram.
+
+    Canal de respaldo para cuando WhatsApp no sirve: el número de avisos es el
+    del cliente, no hay WA_AVISO_A, o Meta no deja entregar fuera de la ventana
+    de 24 h. Telegram no tiene ninguna de esas restricciones.
+    """
+    try:
+        ruta = LOG_PATH.parent / "pases.jsonl"
+        ruta.parent.mkdir(parents=True, exist_ok=True)
+        with ruta.open("a", encoding="utf-8") as f:
+            f.write(json.dumps({
+                "ts": time.strftime("%Y-%m-%dT%H:%M:%S"),
+                "cliente": telefono,
+                "escribio": entra[:400],
+                "bot_dijo": sale[:400],
+            }, ensure_ascii=False) + "\n")
+    except Exception as e:  # noqa: BLE001 — nunca tumbar el webhook por esto
+        log.error("no se pudo encolar el pase: %s", e)
 
 
 # --------------------------------------------------------------------------- #
